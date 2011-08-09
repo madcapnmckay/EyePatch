@@ -1,0 +1,20 @@
+2011-08-08 21:58:31,410 [1] INFO  Rhino.Licensing.LicenseValidator [(null)] - License expiration date is 07/13/2011 03:25:22
+2011-08-08 21:58:31,489 [1] WARN  Rhino.Licensing.LicenseValidator [(null)] - Could not validate existing license
+<?xml version="1.0" encoding="utf-8"?>
+<license id="2e53bc81-4ef5-4c49-ac2a-c52ec9452fd5" expiration="2011-07-13T03:25:22.3668847" type="Trial" prof="L2SProf">
+  <name>Ian Mckay</name>
+  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <SignedInfo>
+      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
+      <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+      <Reference URI="">
+        <Transforms>
+          <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+        </Transforms>
+        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <DigestValue>rP7jOSco2PX6Q4lv0D7eJTEORCA=</DigestValue>
+      </Reference>
+    </SignedInfo>
+    <SignatureValue>g4MRq1wanmbEPR7Bd8zlbQLW4YNk5ri8UAAcqI42R5s7PFv8LS3+5GaX5C9P8ujdX0ZvQb/TOLUmghyX3qFliAjta/Fr4VwrmknSVG0QJl7rv0gQT38KhGXzTj6R/BxGdzRr1Z+xr1QJoYKUrRtIuQX2xioN1mPrWeqBf9DcZB8=</SignatureValue>
+  </Signature>
+</license>

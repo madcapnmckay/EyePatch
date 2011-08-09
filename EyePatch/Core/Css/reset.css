@@ -1,0 +1,43 @@
+﻿ .eyepatch-admin { line-height: 1; }
+
+/************************
+Interface Reset
+************************/
+.eyepatch-admin div, .eyepatch-admin span, .eyepatch-admin applet, .eyepatch-admin object, .eyepatch-admin iframe, .eyepatch-admin table, .eyepatch-admin caption, 
+.eyepatch-admin tbody, .eyepatch-admin tfoot, .eyepatch-admin thead, .eyepatch-admin tr, .eyepatch-admin th, .eyepatch-admin td, .eyepatch-admin del, .eyepatch-admin dfn, 
+.eyepatch-admin em, .eyepatch-admin font, .eyepatch-admin img, .eyepatch-admin ins, .eyepatch-admin kbd, .eyepatch-admin q, .eyepatch-admin s, .eyepatch-admin samp, 
+.eyepatch-admin small, .eyepatch-admin strike, .eyepatch-admin strong, .eyepatch-admin sub, .eyepatch-admin sup, .eyepatch-admin tt, .eyepatch-admin var, .eyepatch-admin h1, 
+.eyepatch-admin h2, .eyepatch-admin h3, .eyepatch-admin h4, .eyepatch-admin h5, .eyepatch-admin h6, .eyepatch-admin p, .eyepatch-admin blockquote, .eyepatch-admin pre, 
+.eyepatch-admin a, .eyepatch-admin abbr, .eyepatch-admin acronym, .eyepatch-admin address, .eyepatch-admin big, .eyepatch-admin cite, .eyepatch-admin code, .eyepatch-admin dl, 
+.eyepatch-admin dt, .eyepatch-admin dd, .eyepatch-admin ol, .eyepatch-admin ul, .eyepatch-admin li, .eyepatch-admin fieldset, .eyepatch-admin form, .eyepatch-admin label, 
+.eyepatch-admin legend {
+    border: 0 none;
+    font-family: inherit;
+    font-size: 100%;
+    font-style: inherit;
+    font-weight: inherit;
+    margin: 0;
+    outline: 0 none;
+    padding: 0;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+.eyepatch-admin article, .eyepatch-admin aside, .eyepatch-admin details, .eyepatch-admin figcaption, .eyepatch-admin figure, 
+.eyepatch-admin footer, .eyepatch-admin header, .eyepatch-admin hgroup, .eyepatch-admin menu, .eyepatch-admin nav, .eyepatch-admin section {
+	display: block;
+}
+.eyepatch-admin ol, .eyepatch-admin ul {
+	list-style: none;
+}
+.eyepatch-admin blockquote, .eyepatch-admin q {
+	quotes: none;
+}
+.eyepatch-admin blockquote:before, .eyepatch-admin blockquote:after,
+.eyepatch-admin q:before, .eyepatch-admin q:after {
+	content: '';
+	content: none;
+}
+.eyepatch-admin table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}

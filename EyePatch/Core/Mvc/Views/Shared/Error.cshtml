@@ -1,0 +1,27 @@
+﻿@model HandleErrorInfo
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>An Error Has Occurred</title>
+</head>
+<body>
+    <div>
+        <h2>An Error Has Occurred</h2>
+
+        @if (EyePatchApplication.ReleaseMode != ReleaseMode.Production)
+        {
+            <h3>
+                @Model.Exception.Message
+            </h3>
+            <p>
+                @Model.Exception.StackTrace
+            </p>
+        }
+    </div>
+</body>
+</html>

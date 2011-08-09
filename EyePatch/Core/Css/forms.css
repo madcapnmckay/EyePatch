@@ -1,0 +1,60 @@
+﻿.eyepatch-admin .form { padding: 20px; bottom: 0; height: auto; left: 0; position: absolute; right: 0; top: 0; }
+/* text boxes */
+.eyepatch-admin form input, .eyepatch-admin form textarea, .eyepatch-admin form select {font-family: inherit;font-size: inherit; border: 1px solid #9E9E9E; color: #333333; margin: 0; padding: 3px 5px; width: 15em; line-height: 1.4375; }
+.eyepatch-admin form input::-webkit-input-placeholder { color: #999; }
+.eyepatch-admin form input:-moz-placeholder, .eyepatch-admin form textarea:-moz-placeholder { color: #999; }
+
+.eyepatch-admin form input[type='checkbox'] { width: auto; }
+.eyepatch-admin form input:focus, .eyepatch-admin form textarea:focus, .eyepatch-admin form select:focus { outline: none; }
+.eyepatch-admin form input.x-small, .eyepatch-admin form textarea.x-small { width: 3em; }
+.eyepatch-admin form input.small, .eyepatch-admin form textarea.small { width: 10em; }
+.eyepatch-admin form input.large, .eyepatch-admin form textarea.large { width: 20em; }
+.eyepatch-admin form input.inline { display: inline-block; margin-right: 5px;  }
+.eyepatch-admin form input:disabled, .eyepatch-admin form textarea:disabled { color: #A1A1A1; }
+/* labels */
+.eyepatch-admin form label { color: #333333; display: block; padding: 0.8em 0; font-size: 13px; }
+.eyepatch-admin form label.error { color: #E14E04; display: inline; float: left; font-size: 1.7em; font-weight: bold; line-height: 1; padding: 0 0 0 3px; }
+
+.eyepatch-admin .button-container { bottom: 0; left: 0; overflow: hidden; padding: 20px; position: absolute; right: 0; }
+.eyepatch-admin .button-container .error { display: none; float: left; color: Red; background: White url('/core/images/exclamation-red-frame.png') no-repeat center left; padding-left: 25px; }
+
+.eyepatch-admin form button, .eyepatch-admin .button { border: 1px solid #5F6F7D; float: right; padding: 8px 25px; cursor: pointer; margin-left: 10px; }
+.eyepatch-admin form .input-validation-error { border: 1px solid Red; }
+.eyepatch-admin form .field-validation-error { display: inline-block; width: 16px; height: 16px; background: transparent url('/core/images/exclamation-red.png') no-repeat; }
+.eyepatch-admin form .field-validation-error span { width: 100%; height: 100%; display: block; }
+
+/* Help Icons */
+.eyepatch-admin form .help { display: inline-block; width: 16px; height: 16px; background: transparent url('/core/images/question-small-white.png') no-repeat; }
+
+/* ToolTips by http://code.drewwilson.com/entry/tiptip-jquery-plugin */
+#tiptip_holder { display: none; position: absolute; top: 0; left: 0; z-index: 5200000; }
+#tiptip_holder.tip_top { padding-bottom: 5px; }
+#tiptip_holder.tip_bottom { padding-top: 5px; }
+/* using this as error */
+#tiptip_holder.tip_right { padding-left: 5px; }
+#tiptip_holder.tip_left { padding-right: 5px; }
+#tiptip_content { font-size: 12px; line-height: 20px; color: Black; padding: 4px 8px; border: 1px solid rgba(255,255,255,0.25); background-color: rgb(25,25,25); background-color: #FFFF99; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; -webkit-box-shadow: 0 0 3px #555; -moz-box-shadow: 0 0 3px #555; box-shadow: 0 0 3px #555; }
+#tiptip_holder.tip_right #tiptip_content { background-color: Red; color: White; }
+#tiptip_arrow, #tiptip_arrow_inner { position: absolute; border-color: transparent; border-style: solid; border-width: 6px; height: 0; width: 0; }
+#tiptip_holder.tip_top #tiptip_arrow { border-top-color: #fff; border-top-color: rgba(255,255,255,0.35); }
+#tiptip_holder.tip_bottom #tiptip_arrow { border-bottom-color: #fff; border-bottom-color: rgba(255,255,255,0.35); }
+#tiptip_holder.tip_right #tiptip_arrow { border-right-color: #fff; border-right-color: Red; }
+#tiptip_holder.tip_left #tiptip_arrow { border-left-color: #fff; border-left-color: rgba(255,255,255,0.35); }
+#tiptip_holder.tip_top #tiptip_arrow_inner { margin-top: -7px; margin-left: -6px; border-top-color: rgb(25,25,25); border-top-color: rgba(25,25,25,0.92); }
+#tiptip_holder.tip_bottom #tiptip_arrow_inner { margin-top: -5px; margin-left: -6px; border-bottom-color: rgb(25,25,25); border-bottom-color: rgba(25,25,25,0.92); }
+#tiptip_holder.tip_right #tiptip_arrow_inner { margin-top: -6px; margin-left: -5px; border-right-color: Red; border-right-color: Red; }
+#tiptip_holder.tip_left #tiptip_arrow_inner { margin-top: -6px; margin-left: -7px; border-left-color: rgb(25,25,25); border-left-color: rgba(25,25,25,0.92); }
+/* Webkit Hacks  */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    #tiptip_content { padding: 4px 8px 5px 8px; background-color: rgba(45,45,45,0.88); }
+    #tiptip_holder.tip_bottom #tiptip_arrow_inner { border-bottom-color: rgba(45,45,45,0.88); }
+    #tiptip_holder.tip_top #tiptip_arrow_inner { border-top-color: rgba(20,20,20,0.92); }
+}
+/*http://thrivingkings.com/apprise/ */
+.appriseOverlay { position: fixed; top: 0; left: 0; background: rgba(0,0,0,0.3); display: none; }
+.appriseOuter { background: #eee; border: 1px solid #fff; box-shadow: 0 3px 7px #333; -moz-box-shadow: 0 3px 7px #333; -webkit-box-shadow: 0 3px 7px #333; -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px; -khtml-border-radius: 4px; z-index: 99999999; min-width: 200px; min-height: 50px; max-width: 75%; position: fixed; display: none; }
+.appriseInner { color: #333; text-shadow: 0 1px 0 #fff; padding: 20px; }
+.appriseInner button { border: 1px solid #bbb; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; -khtml-border-radius: 3px; background: 0; color: #232d3d; font-size: 12px; font-weight: 700; text-shadow: 0 1px 0 #fff; cursor: pointer; box-shadow: 0 1px 2px #ccc; -moz-box-shadow: 0 1px 2px #ccc; -webkit-box-shadow: 0 1px 2px #ccc; margin: 0 3px; padding: 4px 10px; }
+.appriseInner button:hover { color: #d85054; }
+.aButtons, .aInput { text-align: center; margin: 20px 10px 0; }
+.aTextbox { border: 1px solid #aaa; -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px; -khtml-border-radius: 4px; box-shadow: 0 1px 0 #fff; -moz-box-shadow: 0 1px 0 #fff; -webkit-box-shadow: 0 1px 0 #fff; width: 180px; font-size: 12px; font-weight: 700; padding: 5px 10px; }

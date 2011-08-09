@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11.125, 11.875" name="CMS">
+  <DataContextMoniker Name="/EyePatchDataContext" />
+  <nestedChildShapes>
+    <classShape Id="10bcc550-fb2a-4a28-b1ba-b779b6dbb159" absoluteBounds="8.375, 6.5, 2, 1.3862939453125005">
+      <DataClassMoniker Name="/EyePatchDataContext/Folder" />
+      <nestedChildShapes>
+        <elementListCompartment Id="4adb332b-f238-45bf-9b1e-b8c6bcc412dd" absoluteBounds="8.39, 6.9600000000000009, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="8699547d-c930-4114-a7b1-3d781cc79a01" absoluteBounds="6.25, 0.875, 2, 1.7708968098958331">
+      <DataClassMoniker Name="/EyePatchDataContext/WidgetInstance" />
+      <nestedChildShapes>
+        <elementListCompartment Id="9f532ce2-0455-404b-b0c7-c4701f2120db" absoluteBounds="6.265, 1.335, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="d880f446-a138-446c-8239-dd06ed875d2e" absoluteBounds="3.5, 1, 2, 1.5785953776041664">
+      <DataClassMoniker Name="/EyePatchDataContext/Widget" />
+      <nestedChildShapes>
+        <elementListCompartment Id="7bde082d-5120-4448-966c-4345c182a766" absoluteBounds="3.515, 1.46, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(9.07431705603966 : 7.8862939453125); (9.07431705603966 : 8.1362939453125); (9.69000117938702 : 8.1362939453125); (9.69000117938702 : 7.8862939453125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/EyePatchDataContext/Folder/Folder_Folder" />
+      <nodes>
+        <classShapeMoniker Id="10bcc550-fb2a-4a28-b1ba-b779b6dbb159" />
+        <classShapeMoniker Id="10bcc550-fb2a-4a28-b1ba-b779b6dbb159" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(5.5 : 1.78929768880208); (6.25 : 1.78929768880208)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/EyePatchDataContext/Widget/Widget_WidgetInstance" />
+      <nodes>
+        <classShapeMoniker Id="d880f446-a138-446c-8239-dd06ed875d2e" />
+        <classShapeMoniker Id="8699547d-c930-4114-a7b1-3d781cc79a01" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="2d85b9df-ab67-4552-9619-aaef258417af" absoluteBounds="0.75, 3.5, 2, 1.3862939453125">
+      <DataClassMoniker Name="/EyePatchDataContext/ContentArea" />
+      <nestedChildShapes>
+        <elementListCompartment Id="7dc6fb41-d385-4b0a-832d-f69861636927" absoluteBounds="0.76499999999999968, 3.96, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.75 : 3.96875); (7.53125 : 3.96875); (7.53125 : 2.64589680989583)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/EyePatchDataContext/ContentArea/ContentArea_WidgetInstance" />
+      <nodes>
+        <classShapeMoniker Id="2d85b9df-ab67-4552-9619-aaef258417af" />
+        <classShapeMoniker Id="8699547d-c930-4114-a7b1-3d781cc79a01" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="cd1ed73f-a01e-4733-801f-88a755f05618" absoluteBounds="8, 9.25, 2, 1.3862939453125">
+      <DataClassMoniker Name="/EyePatchDataContext/Site" />
+      <nestedChildShapes>
+        <elementListCompartment Id="072bb3b5-e877-4db6-a498-37dbf846ab37" absoluteBounds="8.015, 9.71, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="c0eccb07-a17a-4cc5-aa4c-fe0d1f0ed3df" absoluteBounds="0.75, 1, 2, 1.7708968098958331">
+      <DataClassMoniker Name="/EyePatchDataContext/Plugin" />
+      <nestedChildShapes>
+        <elementListCompartment Id="5d702994-ec46-4447-a772-99847c14769e" absoluteBounds="0.76500000000000012, 1.46, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.75 : 1.78929768880208); (3.5 : 1.78929768880208)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/EyePatchDataContext/Plugin/Plugin_Widget" />
+      <nodes>
+        <classShapeMoniker Id="c0eccb07-a17a-4cc5-aa4c-fe0d1f0ed3df" />
+        <classShapeMoniker Id="d880f446-a138-446c-8239-dd06ed875d2e" />
+      </nodes>
+    </associationConnector>
+    <classShape Id="7f0e0bb4-8223-48c8-9da3-7599d5941ae1" absoluteBounds="0.5, 5.5, 2, 5.6169254557291657">
+      <DataClassMoniker Name="/EyePatchDataContext/Template" />
+      <nestedChildShapes>
+        <elementListCompartment Id="d641d3c9-c71a-476b-ad7b-abd98f4c1e53" absoluteBounds="0.51500000000000012, 5.96, 1.9700000000000002, 5.0569254557291661" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="7c9b59f0-b42f-4425-9d6d-13f6d17b9e18" absoluteBounds="8.875, 1, 2, 1.9631982421875">
+      <DataClassMoniker Name="/EyePatchDataContext/MediaFile" />
+      <nestedChildShapes>
+        <elementListCompartment Id="28fe7407-61f8-42f4-9d52-be5929c1d824" absoluteBounds="8.89, 1.46, 1.9700000000000002, 1.4031982421875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="886360c2-037f-423c-b682-60a43846302d" absoluteBounds="4.75, 4.5, 2, 7.1553369140625">
+      <DataClassMoniker Name="/EyePatchDataContext/Page" />
+      <nestedChildShapes>
+        <elementListCompartment Id="dc9f0d06-2d8f-4eca-977e-ebf2aa2c1357" absoluteBounds="4.765, 4.96, 1.9700000000000002, 6.5953369140625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(4.75 : 4.69314697265625); (2.75 : 4.69314697265625)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/EyePatchDataContext/Page/Page_ContentArea" />
+      <nodes>
+        <classShapeMoniker Id="886360c2-037f-423c-b682-60a43846302d" />
+        <classShapeMoniker Id="2d85b9df-ab67-4552-9619-aaef258417af" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(8.375 : 7.19314697265625); (6.75 : 7.19314697265625)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/EyePatchDataContext/Folder/Folder_Page" />
+      <nodes>
+        <classShapeMoniker Id="10bcc550-fb2a-4a28-b1ba-b779b6dbb159" />
+        <classShapeMoniker Id="886360c2-037f-423c-b682-60a43846302d" />
+      </nodes>
+    </associationConnector>
+    <associationConnector edgePoints="[(2.5 : 6.28125); (4.75 : 6.28125)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+      <AssociationMoniker Name="/EyePatchDataContext/Template/Template_Page" />
+      <nodes>
+        <classShapeMoniker Id="7f0e0bb4-8223-48c8-9da3-7599d5941ae1" />
+        <classShapeMoniker Id="886360c2-037f-423c-b682-60a43846302d" />
+      </nodes>
+    </associationConnector>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    @Html.Head()
+    @Html.RenderCss()
+</head>
+<body>
+    <div class="page" style="margin: 0 auto; width: 720px;">
+        <header>
+            <div id="title">
+                <h1>Welcome to EyePatch</h1>
+                <h2>You are on page @Html.Title() - To Login go <a href="/admin">here</a></h2>
+            </div>
+            <nav>
+                <div style="display: inline-block; float: right; width: 100%; min-height: 50px;">
+                    @{ Html.ContentArea("Navigation"); }
+                </div>
+            </nav>
+        </header>
+        <section id="main">
+            @RenderBody()
+        </section>
+        <footer>
+            <div id="log" style="clear:both;font-size:8pt;font-family: 'Courier New', Courier, sans-serif;"></div>
+        </footer>
+    </div>
+    
+    @Html.RenderJs()
+   @* <script type="text/javascript" src="/core/js/rangy-core.js"></script>
+    <script type="text/javascript" src="/core/js/rangy-selectionsaverestore.js"></script>
+    <script type="text/javascript" src="/core/js/rangy-cssclassapplier.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            rangy.init();
+            alert(rangy.saveSelection !== undefined);
+        });
+    </script>*@
+</body>
+</html>

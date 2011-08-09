@@ -1,0 +1,5 @@
+﻿.ui-taskbar .tb-blog { background-image: url('/resource/embedded?fileName=EyePatch.Blog.images.blog-icon.png'); }
+.eyepatch-admin .blog-window .ui-tabs .tab-body { height: 423px; }
+.post-info { background-color: White; padding: 20px; }
+
+.blog-window .tree .post > .node > .icon { background-image: url('/resource/embedded?fileName=EyePatch.Blog.images.blog.png');  }

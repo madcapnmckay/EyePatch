@@ -1,0 +1,472 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{60E87FFB-52A2-4C72-B0FF-11CABAA1B68C}</ProjectGuid>
+    <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EyePatch</RootNamespace>
+    <AssemblyName>EyePatch</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>false</UseIISExpress>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AjaxMin">
+      <HintPath>..\packages\AjaxMin.4.19.4141.18463\lib\AjaxMin.dll</HintPath>
+    </Reference>
+    <Reference Include="EcmaScript.NET.modified">
+      <HintPath>..\packages\YUICompressor.NET.1.5.0.0\lib\NET35\EcmaScript.NET.modified.dll</HintPath>
+    </Reference>
+    <Reference Include="HibernatingRhinos.Profiler.Appender.v4.0">
+      <HintPath>..\packages\LinqToSqlProfiler.1.0.0.905\lib\Net40\HibernatingRhinos.Profiler.Appender.v4.0.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.4.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NKnockoutUI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\NKnockoutUI.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap">
+      <HintPath>..\packages\structuremap.2.6.2\lib\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Helpers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.WebPages.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.4.1\lib\net40\WebActivator.dll</HintPath>
+    </Reference>
+    <Reference Include="Yahoo.Yui.Compressor">
+      <HintPath>..\packages\YUICompressor.NET.1.5.0.0\lib\NET35\Yahoo.Yui.Compressor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\LinqToSqlProfilerBootstrapper.cs" />
+    <Compile Include="Core\ContentManager.cs" />
+    <Compile Include="Core\Entity\CMS.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CMS.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Entity\EyePatchDataContext.cs" />
+    <Compile Include="Core\Entity\IAuditCreatedDate.cs" />
+    <Compile Include="Core\Entity\IAuditModifiedDate.cs" />
+    <Compile Include="Core\Entity\MediaFile.cs" />
+    <Compile Include="Core\Entity\Page.cs" />
+    <Compile Include="Core\Entity\Plugin.cs" />
+    <Compile Include="Core\Entity\WidgetInstance.cs" />
+    <Compile Include="Core\IoC\StructureMapControllerActivator.cs" />
+    <Compile Include="Core\IoC\StructureMapControllerFactory.cs" />
+    <Compile Include="Core\Models\AdminPanelViewModel.cs" />
+    <Compile Include="Core\Models\AdminRoutes.cs" />
+    <Compile Include="Core\Models\Forms\TemplateForm.cs" />
+    <Compile Include="Core\Models\Forms\FacebookForm.cs" />
+    <Compile Include="Core\Models\Forms\PageFacebookForm.cs" />
+    <Compile Include="Core\Models\Forms\PageSearchForm.cs" />
+    <Compile Include="Core\Models\Forms\SearchForm.cs" />
+    <Compile Include="Core\Models\MediaFolderContextMenu.cs" />
+    <Compile Include="Core\Models\Menu\MenuItem.cs" />
+    <Compile Include="Core\Models\Menu\MenuViewModel.cs" />
+    <Compile Include="Core\Models\Tree\MediaTree.cs" />
+    <Compile Include="Core\Models\Tree\Nodes\MediaFolderNode.cs" />
+    <Compile Include="Core\Models\Tree\Nodes\TemplateNode.cs" />
+    <Compile Include="Core\Models\Tree\TemplateTree.cs" />
+    <Compile Include="Core\Models\Tree\Nodes\FacebookMetaNode.cs" />
+    <Compile Include="Core\Models\Tree\Nodes\SearchEngineMetaNode.cs" />
+    <Compile Include="Core\Models\WidgetInstance.cs" />
+    <Compile Include="Core\Mvc\ActionFilters\GoogleAnalyticsAttribute.cs" />
+    <Compile Include="Core\Mvc\ActionResults\XmlSiteMapResult.cs" />
+    <Compile Include="Core\Mvc\Controllers\MediaController.cs" />
+    <Compile Include="Core\Mvc\Controllers\MenuController.cs" />
+    <Compile Include="Core\Mvc\Controllers\TemplateController.cs" />
+    <Compile Include="Core\Mvc\Controllers\HtmlWidgetController.cs" />
+    <Compile Include="Core\Mvc\Controllers\WidgetController.cs" />
+    <Compile Include="Core\Mvc\Resources\EmbeddedResource.cs" />
+    <Compile Include="Core\Mvc\Resources\MatchMode.cs" />
+    <Compile Include="Core\Mvc\Resources\ResourceExtensions.cs" />
+    <Compile Include="Core\Mvc\Resources\ResourcePath.cs" />
+    <Compile Include="Core\Models\Tree\Nodes\FolderNode.cs" />
+    <Compile Include="Core\Models\FolderContextMenu.cs" />
+    <Compile Include="Core\Models\Forms\PageForm.cs" />
+    <Compile Include="Core\Models\Tree\Nodes\WidgetGroupNode.cs" />
+    <Compile Include="Core\Models\PageContextMenu.cs" />
+    <Compile Include="Core\Models\Tree\PageTree.cs" />
+    <Compile Include="Core\Models\Tree\Nodes\WidgetNode.cs" />
+    <Compile Include="Core\Models\AdminPanelExtensions.cs" />
+    <Compile Include="Core\Models\Forms\InstallationForm.cs" />
+    <Compile Include="Core\Models\Forms\SignInForm.cs" />
+    <Compile Include="Core\Models\AdminWindow.cs" />
+    <Compile Include="Core\Models\Tree\Nodes\PageNode.cs" />
+    <Compile Include="Core\Models\Tree\WidgetTree.cs" />
+    <Compile Include="Core\Mvc\ActionFilters\ContentAreaCleanupAttribute.cs" />
+    <Compile Include="Core\Mvc\ActionFilters\CompressAttribute.cs" />
+    <Compile Include="Core\Mvc\ActionFilters\RegexResponseFilter.cs" />
+    <Compile Include="Core\Mvc\Controllers\AdminController.cs" />
+    <Compile Include="Core\Mvc\Controllers\BaseController.cs" />
+    <Compile Include="Core\Mvc\Controllers\ContentController.cs" />
+    <Compile Include="Core\Mvc\Controllers\FolderController.cs" />
+    <Compile Include="Core\Mvc\Controllers\PageController.cs" />
+    <Compile Include="Core\Mvc\Controllers\ResourceController.cs" />
+    <Compile Include="Core\Mvc\EyePatchViewEngine.cs" />
+    <Compile Include="Core\Mvc\Resources\IResourceCollection.cs" />
+    <Compile Include="Core\Mvc\Resources\IResourcePathProvider.cs" />
+    <Compile Include="Core\Mvc\Resources\Resource.cs" />
+    <Compile Include="Core\Mvc\Resources\ResourceCollection.cs" />
+    <Compile Include="Core\Mvc\Resources\ResourcePathProvider.cs" />
+    <Compile Include="Core\Mvc\Resources\Resources.cs" />
+    <Compile Include="Core\Mvc\Routing\IRouteRegistry.cs" />
+    <Compile Include="Core\Mvc\Routing\RouteCollectionExtensions.cs" />
+    <Compile Include="Core\Mvc\Sitemap\ChangeFrequency.cs" />
+    <Compile Include="Core\Mvc\Sitemap\ISiteMapItem.cs" />
+    <Compile Include="Core\Mvc\Sitemap\SiteMapItem.cs" />
+    <Compile Include="Core\Mvc\Sitemap\XmlSiteMap.cs" />
+    <Compile Include="Core\Mvc\Validation\PropertiesMustMatchAttribute.cs" />
+    <Compile Include="Core\Mvc\Validation\ValidatePasswordLengthAttribute.cs" />
+    <Compile Include="Core\Plugins\IEyePatchPlugin.cs" />
+    <Compile Include="Core\Plugins\PreApplicationInit.cs" />
+    <Compile Include="Core\Plugins\Standard.cs" />
+    <Compile Include="Core\Plugins\PluginControllerBase.cs" />
+    <Compile Include="Core\Services\ApplicationService.cs" />
+    <Compile Include="Core\Services\Contracts\IMediaService.cs" />
+    <Compile Include="Core\Services\Contracts\IPluginService.cs" />
+    <Compile Include="Core\Services\FormsAuthenticationService.cs" />
+    <Compile Include="Core\Services\Contracts\IApplicationService.cs" />
+    <Compile Include="Core\Services\FolderService.cs" />
+    <Compile Include="Core\Services\Contracts\IFolderService.cs" />
+    <Compile Include="Core\Services\Contracts\IFormsAuthenticationService.cs" />
+    <Compile Include="Core\Services\Contracts\IMembershipService.cs" />
+    <Compile Include="Core\Services\Contracts\IPageService.cs" />
+    <Compile Include="Core\Services\Contracts\IResourceService.cs" />
+    <Compile Include="Core\Services\Contracts\ITemplateService.cs" />
+    <Compile Include="Core\Services\Contracts\IWidgetService.cs" />
+    <Compile Include="Core\Services\MediaService.cs" />
+    <Compile Include="Core\Services\PageService.cs" />
+    <Compile Include="Core\Services\PluginService.cs" />
+    <Compile Include="Core\Services\ResourceService.cs" />
+    <Compile Include="Core\Services\ServiceBase.cs" />
+    <Compile Include="Core\Services\SqlServiceMembershipService.cs" />
+    <Compile Include="Core\Services\TemplateService.cs" />
+    <Compile Include="Core\Services\WidgetService.cs" />
+    <Compile Include="Core\Util\DataSourceTools.cs" />
+    <Compile Include="Core\Util\EmbeddedResourceTools.cs" />
+    <Compile Include="Core\Util\Extensions\HtmlExtensions.cs" />
+    <Compile Include="Core\Util\AccountValidation.cs" />
+    <Compile Include="Core\Util\CacheProvider.cs" />
+    <Compile Include="Core\Util\Exceptions\InstallationException.cs" />
+    <Compile Include="Core\Util\Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Core\Util\Extensions\FormExtensions.cs" />
+    <Compile Include="Core\Util\Extensions\MembershipExtensions.cs" />
+    <Compile Include="Core\Util\Extensions\PathExtensions.cs" />
+    <Compile Include="Core\Util\Extensions\QueryableExtensions.cs" />
+    <Compile Include="Core\Util\Extensions\ResourceExtensions.cs" />
+    <Compile Include="Core\Util\Extensions\StringExtensions.cs" />
+    <Compile Include="Core\Util\Extensions\UrlHelperExtensions.cs" />
+    <Compile Include="Core\Util\EyePatchApplication.cs" />
+    <Compile Include="Core\IContentManager.cs" />
+    <Compile Include="Core\IoC\StructureMapDependencyResolver.cs" />
+    <Compile Include="Core\IoC\PluginRegistry.cs" />
+    <Compile Include="Core\IoC\CoreRegistry.cs" />
+    <Compile Include="Core\Mvc\ActionFilters\HandleJsonErrorAttribute.cs" />
+    <Compile Include="Core\Mvc\ActionResults\JsonNetResult.cs" />
+    <Compile Include="Core\Mvc\Routing\ManagedRoute.cs" />
+    <Compile Include="Core\Util\EyePatchConfig.cs" />
+    <Compile Include="Core\Util\Files\WriteLockDisposable.cs" />
+    <Compile Include="Core\Util\ICacheProvider.cs" />
+    <Compile Include="Core\Util\MD5.cs" />
+    <Compile Include="Core\Util\PathHelper.cs" />
+    <Compile Include="Core\Util\ReleaseMode.cs" />
+    <Compile Include="Core\Util\Url.cs" />
+    <Compile Include="Core\Widgets\AssemblyResourceProvider.cs" />
+    <Compile Include="Core\Widgets\Html\BasicHtmlWidget.cs" />
+    <Compile Include="Core\Widgets\SimpleMenu\SimpleMenuWidget.cs" />
+    <Compile Include="Core\Widgets\IWidget.cs" />
+    <Compile Include="Core\Widgets\PartialRequestWidget.cs" />
+    <Compile Include="Core\Widgets\WidgetContext.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Start\LinqToSqlProfilerBootstrapper.vb" />
+    <Content Include="Core\Css\eyepatch-admin.css">
+      <DependentUpon>mash.chirp.config</DependentUpon>
+    </Content>
+    <Content Include="Core\Css\eyepatch-admin.min.css">
+      <DependentUpon>mash.chirp.config</DependentUpon>
+    </Content>
+    <Content Include="Core\Css\forms.css" />
+    <Content Include="Core\Css\global.css" />
+    <Content Include="Core\Css\interface.css" />
+    <Content Include="Core\Css\reset.css" />
+    <Content Include="Core\Images\ajax-loader2.gif" />
+    <Content Include="Core\Images\balloon-facebook-left.png" />
+    <Content Include="Core\Images\balloon-quotation.png" />
+    <Content Include="Core\Images\clipboard-paste.png" />
+    <Content Include="Core\Images\edit-alignment-center.png" />
+    <Content Include="Core\Images\edit-alignment-right.png" />
+    <Content Include="Core\Images\edit-alignment.png" />
+    <Content Include="Core\Images\edit-bold.png" />
+    <Content Include="Core\Images\edit-code.png" />
+    <Content Include="Core\Images\edit-heading.png" />
+    <Content Include="Core\Images\edit-italic.png" />
+    <Content Include="Core\Images\edit-list-order.png" />
+    <Content Include="Core\Images\edit-list.png" />
+    <Content Include="Core\Images\edit-subscript.png" />
+    <Content Include="Core\Images\edit-superscript.png" />
+    <Content Include="Core\Images\edit-underline.png" />
+    <Content Include="Core\Images\google.png" />
+    <Content Include="Core\Images\html.png" />
+    <Content Include="Core\Images\picture--plus.png" />
+    <Content Include="Core\Images\template.png" />
+    <Content Include="Core\Images\text.png" />
+    <Content Include="Core\Js\AdminPanel\eyepatch-admin-images.js" />
+    <Content Include="Core\Js\ajaxfileupload.js" />
+    <Content Include="Core\Js\apprise-1.5.min.js" />
+    <Content Include="Core\Js\Codemirror\clike\clike.js" />
+    <Content Include="Core\Js\Codemirror\clike\index.html" />
+    <Content Include="Core\Js\Codemirror\codemirror.css" />
+    <Content Include="Core\Js\Codemirror\codemirror.js" />
+    <Content Include="Core\Js\Codemirror\css\css.js" />
+    <Content Include="Core\Js\Codemirror\css\index.html" />
+    <Content Include="Core\Js\Codemirror\default.css" />
+    <Content Include="Core\Js\Codemirror\diff\diff.css" />
+    <Content Include="Core\Js\Codemirror\diff\diff.js" />
+    <Content Include="Core\Js\Codemirror\diff\index.html" />
+    <Content Include="Core\Js\Codemirror\haskell\haskell.js" />
+    <Content Include="Core\Js\Codemirror\haskell\index.html" />
+    <Content Include="Core\Js\Codemirror\htmlmixed\htmlmixed.js" />
+    <Content Include="Core\Js\Codemirror\htmlmixed\index.html" />
+    <Content Include="Core\Js\Codemirror\javascript\index.html" />
+    <Content Include="Core\Js\Codemirror\javascript\javascript.js" />
+    <Content Include="Core\Js\Codemirror\lua\index.html" />
+    <Content Include="Core\Js\Codemirror\lua\lua.js" />
+    <Content Include="Core\Js\Codemirror\php\index.html" />
+    <Content Include="Core\Js\Codemirror\php\php.js" />
+    <Content Include="Core\Js\Codemirror\plsql\index.html" />
+    <Content Include="Core\Js\Codemirror\plsql\plsql.js" />
+    <Content Include="Core\Js\Codemirror\python\index.html" />
+    <Content Include="Core\Js\Codemirror\python\LICENSE.txt" />
+    <Content Include="Core\Js\Codemirror\python\python.js" />
+    <Content Include="Core\Js\Codemirror\rst\index.html" />
+    <Content Include="Core\Js\Codemirror\rst\rst.css" />
+    <Content Include="Core\Js\Codemirror\rst\rst.js" />
+    <Content Include="Core\Js\Codemirror\scheme\index.html" />
+    <Content Include="Core\Js\Codemirror\scheme\scheme.js" />
+    <Content Include="Core\Js\Codemirror\smalltalk\index.html" />
+    <Content Include="Core\Js\Codemirror\smalltalk\smalltalk.js" />
+    <Content Include="Core\Js\Codemirror\sparql\index.html" />
+    <Content Include="Core\Js\Codemirror\sparql\sparql.js" />
+    <Content Include="Core\Js\Codemirror\stex\index.html" />
+    <Content Include="Core\Js\Codemirror\stex\stex.js" />
+    <Content Include="Core\Js\Codemirror\xml\index.html" />
+    <Content Include="Core\Js\Codemirror\xml\xml.js" />
+    <Content Include="Core\Js\Codemirror\yaml\index.html" />
+    <Content Include="Core\Js\Codemirror\yaml\yaml.js" />
+    <Content Include="Core\Js\eyepatch-admin.min.js">
+      <DependentUpon>mash.chirp.config</DependentUpon>
+    </Content>
+    <Content Include="Core\Js\jquery.autosuggest.js" />
+    <Content Include="Core\Js\jquery.getUrlParam.js" />
+    <Content Include="Core\Js\jquery.json-2.2.js" />
+    <Content Include="Core\Js\jquery.notice.js" />
+    <Content Include="Core\Js\Knockout-UI\ui-editor.js" />
+    <Content Include="Core\Js\rangy-core.js" />
+    <Content Include="Core\Js\rangy-cssclassapplier.js" />
+    <Content Include="Core\Js\rangy-selectionsaverestore.js" />
+    <Content Include="Core\Widgets\Html\ep-widget-html.css" />
+    <Content Include="Core\Images\ajax-loader.gif" />
+    <Content Include="Core\Images\arrow-move.png" />
+    <Content Include="Core\Images\arrow-right.png" />
+    <Content Include="Core\Images\blue-document.png" />
+    <Content Include="Core\Images\blue-folder-open.png" />
+    <Content Include="Core\Images\blue-folder.png" />
+    <Content Include="Core\Images\close.png" />
+    <Content Include="Core\Images\cross-button.png" />
+    <Content Include="Core\Images\document-copy.png" />
+    <Content Include="Core\Images\document-globe.png" />
+    <Content Include="Core\Images\exclamation-red-frame.png" />
+    <Content Include="Core\Images\exclamation-red.png" />
+    <Content Include="Core\Images\folder-arrow-orig.png" />
+    <Content Include="Core\Images\folder-arrow.png" />
+    <Content Include="Core\Images\folder-large.png" />
+    <Content Include="Core\Images\folder-open.png" />
+    <Content Include="Core\Images\folder.png" />
+    <Content Include="Core\Images\globe--arrow.png" />
+    <Content Include="Core\Images\home.png" />
+    <Content Include="Core\Images\maximize.png" />
+    <Content Include="Core\Images\minimize.png" />
+    <Content Include="Core\Images\pin--minus.png" />
+    <Content Include="Core\Images\pin.png" />
+    <Content Include="Core\Images\puzzle-large.png" />
+    <Content Include="Core\Images\puzzle.png" />
+    <Content Include="Core\Images\question-small-white.png" />
+    <Content Include="Core\Images\skull_and_crossbones.png" />
+    <Content Include="Core\Js\jquery.tiptip.js" />
+    <Content Include="Core\Widgets\Html\eyepatch-widgets-html-admin.js" />
+    <Content Include="Core\Js\AdminPanel\eyepatch-admin-contentarea.js" />
+    <Content Include="Core\Js\AdminPanel\eyepatch-admin-forms.js" />
+    <Content Include="Core\Js\AdminPanel\eyepatch-admin-actions.js" />
+    <Content Include="Core\Js\AdminPanel\eyepatch-admin-global.js" />
+    <Content Include="Core\Js\AdminPanel\eyepatch-admin-info.js" />
+    <Content Include="Core\Js\AdminPanel\eyepatch-admin-panel.js" />
+    <Content Include="Core\Js\AdminPanel\eyepatch-admin-startup.js" />
+    <Content Include="Core\Js\eyepatch-admin.js">
+      <DependentUpon>mash.chirp.config</DependentUpon>
+    </Content>
+    <Content Include="Core\Js\jquery.cookie.js" />
+    <Content Include="Core\Js\jquery.form.js" />
+    <Content Include="Core\Js\jquery.tmpl.js" />
+    <Content Include="Core\Js\knockout-1.2.1.js" />
+    <Content Include="Core\Js\Knockout-UI\ui-contextmenu.js" />
+    <Content Include="Core\Js\Knockout-UI\ui-tabs.js" />
+    <Content Include="Core\Js\Knockout-UI\ui-tree.js" />
+    <Content Include="Core\Js\Knockout-UI\ui-util.js" />
+    <Content Include="Core\Js\Knockout-UI\ui-window.js" />
+    <Content Include="Core\Js\knockout.mapping.js" />
+    <Content Include="Core\Js\splitter.js" />
+    <Content Include="Core\SQL\InstallCommon.sql" />
+    <Content Include="Core\SQL\InstallEyepatch.sql" />
+    <Content Include="Core\SQL\InstallMembership.sql" />
+    <Content Include="Core\SQL\InstallPersonalization.sql" />
+    <Content Include="Core\SQL\InstallProfile.SQL" />
+    <Content Include="Core\SQL\InstallRoles.sql" />
+    <Content Include="Core\SQL\InstallWebEventSqlProvider.sql" />
+    <Content Include="Core\Widgets\SimpleMenu\eyepatch-widgets-menu-admin.js" />
+    <Content Include="Global.asax" />
+    <Content Include="Core\Js\json2.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Templates\_ViewStart.cshtml" />
+    <Content Include="Templates\Shared\_Layout.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Media\Images\" />
+    <Folder Include="Resources\Cache\" />
+    <Folder Include="Resources\Css\" />
+    <Folder Include="Resources\Js\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Core\Css\mash.chirp.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="Core\Entity\CMS.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>CMS.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Core\Mvc\Views\Admin\Install.cshtml" />
+    <Content Include="Core\Mvc\Views\Web.config" />
+    <Content Include="Templates\Web.config" />
+    <Content Include="Templates\Default.cshtml" />
+    <Content Include="Core\Mvc\Views\Admin\SignIn.cshtml" />
+    <Content Include="Core\Js\mash.chirp.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Core\Mvc\Views\Content\Robots.cshtml" />
+    <Content Include="Plugins\Web.config" />
+    <Content Include="Templates\OneColumn.cshtml" />
+    <Content Include="Core\Mvc\Views\Content\GoogleAnalytics.cshtml" />
+    <Content Include="Core\Mvc\Views\Admin\Bootstrapper.cshtml" />
+    <Content Include="Core\Mvc\Views\Shared\Error.cshtml" />
+    <Content Include="Core\Mvc\Views\Menu\SimpleMenu.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Core\Entity\CMS.dbml.layout">
+      <DependentUpon>CMS.dbml</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>58926</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

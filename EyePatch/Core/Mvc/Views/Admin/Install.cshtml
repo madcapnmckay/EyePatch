@@ -1,0 +1,116 @@
+﻿@model EyePatch.Core.Models.Forms.InstallationForm
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Install EyePatch CMS</title>
+    <link href="@Url.Content("~/core/css/reset.css")" rel="Stylesheet" />
+    <link href="@Url.Content("~/core/css/global.css")" rel="Stylesheet" />
+    <link href="@Url.Content("~/core/css/interface.css")" rel="Stylesheet" />
+    <link href="@Url.Content("~/core/css/forms.css")" rel="Stylesheet" />
+</head>
+<body class="eyepatch-admin">
+    <div class="central-column">
+        <div class="eyepatch-admin-window my-window" style="height: 534px; width: 500px; position: relative;
+            display: none;">
+            <div class="inner-window" style="width: 508px; height: 572px;">
+                <div class="title-bar">
+                    <!---->
+                </div>
+            </div>
+            <div class="outer-content">
+                <div class="inner-content" style="height: 530px;">
+                    <!-- Window Contents -->
+                    <div id="installForm" class="form">
+                        <p>
+                            Welcome to EyePatch CMS installation. Since this is a brand new instance of EyePatch,
+                            we need to take some information from you in order to continue.</p>
+                        <p>
+                            If you have any questions about the information required simply hover over the help
+                            icons next to each field or visit the forums <a href="@EyePatchConfig.ForumsHref">here</a>.</p>
+                        @using (Html.BeginForm())
+                        {
+                            <div class="field">
+                                @Html.HelpfulLabelFor(model => model.SiteName)
+                                @Html.EditorFor(model => model.SiteName)
+                                @Html.ValidationMessageFor(model => model.SiteName)
+                            </div>
+                            <div class="field">
+                                @Html.HelpfulLabelFor(model => model.Username)
+                                @Html.EditorFor(model => model.Username)
+                                @Html.ValidationMessageFor(model => model.Username)
+                            </div>
+                            <div class="field">
+                                @Html.HelpfulLabelFor(model => model.Password)
+                                @Html.EditorFor(model => model.Password)
+                                @Html.ValidationMessageFor(model => model.Password)
+                            </div>
+                            <div class="field">
+                                @Html.HelpfulLabelFor(model => model.ComparePassword)
+                                @Html.EditorFor(model => model.ComparePassword)
+                                @Html.ValidationMessageFor(model => model.ComparePassword)
+                            </div>
+                            <div class="field">
+                                @Html.HelpfulLabelFor(model => model.Email)
+                                @Html.EditorFor(model => model.Email)
+                                @Html.ValidationMessageFor(model => model.Email)
+                            </div>
+                            <div class="button-container">
+                                <button type="submit" title="Click here to finish the installation">
+                                    Install EyePatch</button>
+                            </div>
+                        }
+                    </div>
+                    <!-- End Window Contents -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js" type="text/javascript"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.8/jquery.validate.min.js"
+        type="text/javascript"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/mvc/3.0/jquery.validate.unobtrusive.min.js"
+        type="text/javascript"></script>
+    <script src="@Url.Content("~/core/js/jquery.form.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/core/js/jquery.tiptip.js")"
+        type="text/javascript"></script>
+    <script language="javascript" type="text/javascript">
+        $(function () {
+            $('.help').tipTip();
+
+            var validator = $('form').each(function () {
+                $(this).data('validator').settings.errorPlacement = function (error, inputElement) {
+                    var container = inputElement.closest('form').find("[data-valmsg-for='" + inputElement[0].name + "']"),
+                    replace = $.parseJSON(container.attr("data-valmsg-replace")) !== false, text = error.text();
+
+                    container.removeClass("field-validation-valid").addClass("field-validation-error");
+                    error.data("unobtrusiveContainer", container);
+
+                    if (replace) {
+                        container.empty();
+                        error.attr('title', text).empty().removeClass("input-validation-error").appendTo(container).tipTip({ defaultPosition: 'right' });
+                    }
+                    else {
+                        error.hide();
+                    }
+                }
+            });
+
+            $('.eyepatch-admin-window').fadeIn(800);
+
+            $('#installForm form').ajaxForm({
+                type: 'POST',
+                success: function (responseText, statusText, xhr, form) {
+                    if (responseText.success) {
+                        form.closest('.eyepatch-admin-window').fadeOut('2000', function () { window.location = '/' });
+                    } else {
+                        alert('An installation error occcured :' + responseText.message);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

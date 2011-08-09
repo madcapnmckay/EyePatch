@@ -1,0 +1,76 @@
+﻿@{
+    Layout = null;
+}
+var ep = {};
+ep.pageId = @ViewBag.PageId;
+ep.utils = {};
+jQuery.extend({
+    getScript: function (url, callback) {
+        var head = document.getElementsByTagName("head")[0] || document.documentElement;
+        var script = document.createElement("script");
+        script.src = url;
+
+        // Handle Script loading
+        {
+            var done = false;
+
+            // Attach handlers for all browsers
+            script.onload = script.onreadystatechange = function () {
+                if (!done && (!this.readyState || this.readyState === "loaded" ||
+                                       this.readyState === "complete")) {
+                    done = true;
+                    //success();
+                    //complete();
+                    if (callback)
+                        callback();
+
+                    // Handle memory leak in IE
+                    script.onload = script.onreadystatechange = null;
+                    if (head && script.parentNode) {
+                        head.removeChild(script);
+                    }
+                }
+            };
+        }
+
+        head.insertBefore(script, head.firstChild);
+        return undefined;
+    }
+});
+(function () {
+    ep.utils.loadCss = function(files) {
+        var $head = $('head');
+        $.each(files, function(idx, element) { $('<link rel="stylesheet" href="' + element.url + '" />').appendTo($head); });
+    };
+    ep.utils.loadScripts = function(files, onFinish) {
+        if (files.length > 0)
+        {
+            var script = files.shift();
+            $.getScript(script.url, function() { ep.utils.loadScripts(files, onFinish); });
+        } else if (onFinish) {
+            onFinish.call();
+        }
+    };
+    ep.receiveData = function(data, textStatus, jqXHR) {
+
+        if (!data.success) {
+            alert(data.message);
+        }
+
+        ep.data = data.vm;
+
+        ep.utils.loadCss(ep.data.css);
+        ep.utils.loadScripts(ep.data.scripts, function() { ep.onLoad(); });
+
+        // wait for scripts to be loaded, skip to eyepatch-admin.js
+    };
+})();
+
+// fetch the model data from the server
+$.ajax({
+    dataType: 'json',
+    type: 'POST',
+    data: { pageId : ep.pageId },
+    url: '/admin/data',
+    success: ep.receiveData
+});

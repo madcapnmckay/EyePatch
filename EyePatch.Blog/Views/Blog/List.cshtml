@@ -1,0 +1,36 @@
+﻿@model IList<EyePatch.Blog.Models.Widgets.PostSummary>
+           
+@if (Model.Any())
+{
+    foreach (var post in Model)
+    {
+        <div class="@post.CssClass>">
+            <h2>
+                <a href="@post.Link" title="Click here to read this post">@post.Title</a></h2>
+            <div title="Posted at @post.Link" class="post-date">
+                <span class="month">@post.PublishedMonthShort</span>
+                <span class="day">@post.PublishedDay</span>
+                <span class="year">@post.PublishedYear</span>
+            </div>
+            <div class="post-comments">
+                <a title="Click here to view this posts comments" href="@post.CommentCountUrl" data-disqus-identifier="@post.DisqusID">??</a>
+            </div>
+            <div class="post-description">
+                <p>
+                    @post.Description <a href="@post.Link" class="read-more" title="Click here to read this post">read more</a>
+                </p>
+
+            </div>
+        </div>
+    }
+    if (Model.Count() > 10)
+    {
+        <div class="pager">
+            <div><a href="">older</a></div>
+            <div><a href="">newer</a></div>
+        </div>
+    }
+} else
+{
+    <div class="post-summary no-posts">There have currently been no posts published</div>
+}

@@ -1,0 +1,11 @@
+﻿@model  EyePatch.Core.Models.Menu.MenuViewModel
+
+@{
+    Layout = null;
+}
+<ul class="ep-menu">
+    @foreach (var item in Model)
+    {
+        <li><a href="@item.Url" title="@item.Description" class="@item.CssClass">@item.Title</a></li>
+    }
+</ul>
