@@ -309,9 +309,6 @@
     <Content Include="Core\Js\Codemirror\xml\xml.js" />
     <Content Include="Core\Js\Codemirror\yaml\index.html" />
     <Content Include="Core\Js\Codemirror\yaml\yaml.js" />
-    <Content Include="Core\Js\eyepatch-admin.min.js">
-      <DependentUpon>mash.chirp.config</DependentUpon>
-    </Content>
     <Content Include="Core\Js\jquery.autosuggest.js" />
     <Content Include="Core\Js\jquery.getUrlParam.js" />
     <Content Include="Core\Js\jquery.json-2.2.js" />
