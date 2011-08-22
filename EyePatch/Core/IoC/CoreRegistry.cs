@@ -18,6 +18,7 @@ namespace EyePatch.Core.IoC
     {
         private static IDocumentStore GetDocumentStore()
         {
+            NonAdminHttp.EnsureCanListenToWhenInNonAdminContext(8080);
             var documentStore = new EmbeddableDocumentStore
             {
                 DataDirectory =
