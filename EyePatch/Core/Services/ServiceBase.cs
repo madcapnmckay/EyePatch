@@ -1,15 +1,20 @@
 ﻿using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
-using EyePatch.Core.Entity;
+using System.Web.Routing;
+using Raven.Client;
 
 namespace EyePatch.Core.Services
 {
     public class ServiceBase
     {
-        protected static readonly object PadLock = new object();
-        protected EyePatchDataContext db;
+        protected IDocumentSession session;
         private UrlHelper urlHelper;
+
+        public ServiceBase(IDocumentSession session)
+        {
+            this.session = session;
+        }
 
         public UrlHelper Url
         {
@@ -17,9 +22,9 @@ namespace EyePatch.Core.Services
             {
                 if (urlHelper == null)
                 {
-                    var requestContext = new System.Web.Routing.RequestContext(
+                    var requestContext = new RequestContext(
                         new HttpContextWrapper(HttpContext.Current),
-                        new System.Web.Routing.RouteData());
+                        new RouteData());
                     return urlHelper = new UrlHelper(requestContext);
                 }
                 return urlHelper;
@@ -29,11 +34,6 @@ namespace EyePatch.Core.Services
         public Cache Cache
         {
             get { return HttpContext.Current.Cache; }
-        } 
-
-        public ServiceBase(EyePatchDataContext context)
-        {
-            db = context;
         }
     }
 }

@@ -7,65 +7,40 @@ using System.Reflection;
 using System.Threading;
 using System.Web;
 using System.Web.Configuration;
-using EyePatch.Core.Entity;
 using EyePatch.Core.Mvc.Resources;
 using EyePatch.Core.Plugins;
 using EyePatch.Core.Util;
 using EyePatch.Core.Util.Extensions;
-using Microsoft.Ajax.Utilities;
+using Microsoft.Win32;
+using Raven.Client;
 using StructureMap;
+using Yahoo.Yui.Compressor;
 
 namespace EyePatch.Core.Services
 {
     public class ResourceService : ServiceBase, IResourceService
     {
+        private static readonly ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
         protected ICacheProvider cacheProvider;
         protected string resourceBaseUrl = WebConfigurationManager.AppSettings["ResourceCache"];
-        private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
-        private readonly CodeSettings jsSettings;
-        private readonly CssSettings cssSettings;
 
-        public ResourceService(EyePatchDataContext context, ICacheProvider cacheProvider)
-            : base(context)
+        public ResourceService(IDocumentSession session, ICacheProvider cacheProvider)
+            : base(session)
         {
             this.cacheProvider = cacheProvider;
-
-            jsSettings = new CodeSettings
-                    {
-                        MinifyCode = true,
-                        OutputMode = OutputMode.SingleLine,
-                        CollapseToLiteral = true,
-                        CombineDuplicateLiterals = true,
-                        EvalTreatment = EvalTreatment.Ignore,
-                        InlineSafeStrings = true,
-                        LocalRenaming = LocalRenaming.CrunchAll,
-                        MacSafariQuirks = true,
-                        PreserveFunctionNames = false,
-                        RemoveFunctionExpressionNames = true,
-                        RemoveUnneededCode = true,
-                        StripDebugStatements = true,
-                    };
-
-            cssSettings = new CssSettings
-            {
-                AllowEmbeddedAspNetBlocks = false,
-                CommentMode = CssComment.Hacks,
-                ExpandOutput = false,
-                TermSemicolons = true,
-                MinifyExpressions = true,
-                ColorNames = CssColor.Hex
-            };
         }
+
+        #region IResourceService Members
 
         public IEnumerable<ResourcePath> GetResourcePaths(ResourceCollection resources)
         {
-            return GetResourcePaths(resources, 
-                EyePatchApplication.ReleaseMode == ReleaseMode.Production, 
-                EyePatchApplication.ReleaseMode == ReleaseMode.Production, 
-                EyePatchApplication.ReleaseMode == ReleaseMode.Production);
+            return GetResourcePaths(resources, EyePatchApplication.ReleaseMode == ReleaseMode.Production, 
+                                    EyePatchApplication.ReleaseMode == ReleaseMode.Production,
+                                    EyePatchApplication.ReleaseMode == ReleaseMode.Production);
         }
 
-        public IEnumerable<ResourcePath> GetResourcePaths(ResourceCollection resources, bool mash, bool minify, bool cache)
+        public IEnumerable<ResourcePath> GetResourcePaths(ResourceCollection resources, bool mash, bool minify,
+                                                          bool cache)
         {
             if (!mash)
                 return resources.Select(r => ProcessResource(r, minify, cache));
@@ -89,7 +64,7 @@ namespace EyePatch.Core.Services
                 var result = new ResourcePath();
                 result.Contents = File.ReadAllText(physicalFilePath);
                 result.FileName = physicalFilePath;
-                result.Url = Url.Action("fetch", "resource", new { id = identifer });
+                result.Url = Url.Action("fetch", "resource", new {id = identifer});
             }
             return null;
         }
@@ -97,9 +72,14 @@ namespace EyePatch.Core.Services
         public byte[] EmbeddedResource(string resourceName)
         {
             var assemblies = new List<Assembly>();
-            assemblies.AddRange(ObjectFactory.GetAllInstances<IEyePatchPlugin>().Select(t => t.GetType().Assembly).Distinct());
+            assemblies.AddRange(
+                ObjectFactory.GetAllInstances<IEyePatchPlugin>().Select(t => t.GetType().Assembly).Distinct());
 
-            var resourceAssembly = assemblies.Where(a => a.GetManifestResourceNames().Any(r => string.Compare(r, resourceName, true, CultureInfo.InvariantCulture) == 0)).First();
+            var resourceAssembly =
+                assemblies.Where(
+                    a =>
+                    a.GetManifestResourceNames().Any(
+                        r => string.Compare(r, resourceName, true, CultureInfo.InvariantCulture) == 0)).First();
 
             if (resourceAssembly == null)
                 throw new ApplicationException("The resource cannot be found");
@@ -109,11 +89,23 @@ namespace EyePatch.Core.Services
                 if (stream == null)
                     throw new ApplicationException("The resource cannot be read");
 
-                byte[] bytes = new byte[stream.Length];
-                stream.Read(bytes, 0, (int)stream.Length);
+                var bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, (int) stream.Length);
                 return bytes;
             }
         }
+
+        public string MimeType(string filename)
+        {
+            var mime = "application/octetstream";
+            var ext = Path.GetExtension(filename).ToLower();
+            var rk = Registry.ClassesRoot.OpenSubKey(ext);
+            if (rk != null && rk.GetValue("Content Type") != null)
+                mime = rk.GetValue("Content Type").ToString();
+            return mime;
+        }
+
+        #endregion
 
         private ResourcePath ProcessGroup(ResourceCollection set, bool minify, bool cacheRefresh)
         {
@@ -122,7 +114,7 @@ namespace EyePatch.Core.Services
 
             var firstElement = set.First();
             if (set.Count() == 1 && firstElement.IsExternal)
-                return new ResourcePath { ContentType = firstElement.ContentType, Url = firstElement.Url };
+                return new ResourcePath {ContentType = firstElement.ContentType, Url = firstElement.Url};
 
             var cacheKey = minify ? set.UnqiueId.ToMinPath() : set.UnqiueId;
 
@@ -145,7 +137,7 @@ namespace EyePatch.Core.Services
                 // regenerate
                 var result = new ResourcePath();
                 result.ContentType = firstElement.ContentType;
-                result.Url = Url.Action("fetch", "resource", new { id = cacheKey });
+                result.Url = Url.Action("fetch", "resource", new {id = cacheKey});
 
                 // mash
                 result.Contents = set.Mash();
@@ -153,10 +145,9 @@ namespace EyePatch.Core.Services
                 // minify
                 if (minify)
                 {
-                    var minifier = new Minifier();
                     result.Contents = firstElement.ContentType == "text/javascript"
-                                          ? minifier.MinifyJavaScript(result.Contents, jsSettings)
-                                          : minifier.MinifyStyleSheet(result.Contents, cssSettings);
+                                          ? JavaScriptCompressor.Compress(result.Contents)
+                                          : CssCompressor.Compress(result.Contents);
                 }
 
                 // write backup file
@@ -184,7 +175,7 @@ namespace EyePatch.Core.Services
             if (resource == null) throw new ArgumentNullException("resource");
 
             if (!(resource is EmbeddedResource) && (resource.IsExternal || !minify))
-                return new ResourcePath { ContentType = resource.ContentType, Url = resource.Url };
+                return new ResourcePath {ContentType = resource.ContentType, Url = resource.Url};
 
             var cacheKey = resource.FileName.ToMinPath();
 
@@ -208,17 +199,16 @@ namespace EyePatch.Core.Services
                 var result = new ResourcePath();
                 result.ContentType = resource.ContentType;
                 result.Contents = resource.FileContents();
-                result.Url = Url.Action("fetch", "resource", new { id = cacheKey });
+                result.Url = Url.Action("fetch", "resource", new {id = cacheKey});
 
                 // minify
 
-                var minifier = new Minifier();
                 if (minify)
                 {
                     result.Contents = resource.ContentType == "text/javascript"
-                                          ? minifier.MinifyJavaScript(result.Contents, jsSettings)
-                                          : minifier.MinifyStyleSheet(result.Contents, cssSettings);
-                } 
+                                          ? JavaScriptCompressor.Compress(result.Contents)
+                                          : CssCompressor.Compress(result.Contents);
+                }
 
                 // write backup file
                 var physicalFilePath = GetFilePath(cacheKey, false);
@@ -255,7 +245,7 @@ namespace EyePatch.Core.Services
             var groups = new List<ResourceCollection>();
             foreach (var resource in resources)
             {
-                ResourceCollection group = groups.LastOrDefault();
+                var group = groups.LastOrDefault();
                 if (resource.IsExternal || group == null || group.Last().IsExternal)
                 {
                     group = new ResourceCollection();
@@ -264,16 +254,6 @@ namespace EyePatch.Core.Services
                 group.Add(resource);
             }
             return groups;
-        }
-
-        public string MimeType(string filename)
-        {
-            var mime = "application/octetstream";
-            var ext = Path.GetExtension(filename).ToLower();
-            var rk = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(ext);
-            if (rk != null && rk.GetValue("Content Type") != null)
-                mime = rk.GetValue("Content Type").ToString();
-            return mime;
         }
     }
 }

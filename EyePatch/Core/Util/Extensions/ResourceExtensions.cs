@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Web.Mvc;
@@ -10,7 +9,7 @@ namespace EyePatch.Core.Util.Extensions
     public static class ResourceExtensions
     {
         /// <summary>
-        /// Takes a file and returns the min file path
+        ///   Takes a file and returns the min file path
         /// </summary>
         /// <returns></returns>
         public static string ToMinPath(this string path)
@@ -30,14 +29,13 @@ namespace EyePatch.Core.Util.Extensions
                 builder.AppendLine(resourcePath.ContentType == "text/javascript"
                                        ? BuildJs(resourcePath)
                                        : BuildCss(resourcePath));
-                
             }
             return builder.ToString();
         }
 
         private static string BuildCss(ResourcePath resourcePath)
         {
-            var scriptTag = new TagBuilder("script");
+            var scriptTag = new TagBuilder("link");
             scriptTag.Attributes["type"] = resourcePath.ContentType;
             scriptTag.Attributes["href"] = resourcePath.Url;
             scriptTag.Attributes["rel"] = "stylesheet";

@@ -18,19 +18,25 @@ namespace EyePatch.Core.Mvc.ActionFilters
                 // we only include the stacktrace when in debug mode
                 switch (EyePatchApplication.ReleaseMode)
                 {
-                    case ReleaseMode.Production :
+                    case ReleaseMode.Production:
                         data =
                             new
-                            {
-                                status = false,
-                                message =
-                                    filterContext.Exception is ApplicationException
-                                        ? filterContext.Exception.Message
-                                        : "An unknown error has occurred"
-                            };
+                                {
+                                    status = false,
+                                    message =
+                                        filterContext.Exception is ApplicationException
+                                            ? filterContext.Exception.Message
+                                            : "An unknown error has occurred"
+                                };
                         break;
                     default:
-                        data = new { status = false, message = filterContext.Exception.Message, stackTrace = filterContext.Exception.StackTrace };
+                        data =
+                            new
+                                {
+                                    status = false,
+                                    message = filterContext.Exception.Message,
+                                    stackTrace = filterContext.Exception.StackTrace
+                                };
                         break;
                 }
 

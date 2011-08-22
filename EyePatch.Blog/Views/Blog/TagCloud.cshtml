@@ -2,7 +2,7 @@
 <ul>
     @if (Model.Any()) {
         foreach(var tag in Model) {
-             <li><a title="@tag.TagTitle" href="@tag.TaggedLink">@tag.Tag <span class="tag-count">(@tag.Count)</span></a></li>
+             <li><a title="@tag.TagTitle" href="@Url.RouteUrl("PostsTagged", new { tag = tag })">@tag.Tag <span class="tag-count">(@tag.Count)</span></a></li>
         }
     } else {
         <li><p>No posts have been tagged</p></li>

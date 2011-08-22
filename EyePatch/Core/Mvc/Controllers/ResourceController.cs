@@ -1,7 +1,6 @@
-﻿using System.Web.Mvc;
+﻿using System.Text;
+using System.Web.Mvc;
 using EyePatch.Core.Mvc.ActionFilters;
-using EyePatch.Core.Mvc.Resources;
-using EyePatch.Core.Util;
 
 namespace EyePatch.Core.Mvc.Controllers
 {
@@ -11,7 +10,7 @@ namespace EyePatch.Core.Mvc.Controllers
         {
         }
 
-        [/*OutputCache(Duration = 604800), */Compress]
+        [ /*OutputCache(Duration = 604800), */Compress]
         public FileResult Fetch(string id)
         {
             var resource = contentManager.Resources.GetContentsFor(id);
@@ -19,7 +18,7 @@ namespace EyePatch.Core.Mvc.Controllers
             if (resource != null)
             {
                 Response.AddFileDependency(resource.FileName);
-                return File(new System.Text.ASCIIEncoding().GetBytes(resource.Contents), resource.ContentType + "; charset=UTF-8");
+                return File(new ASCIIEncoding().GetBytes(resource.Contents), resource.ContentType + "; charset=UTF-8");
             }
             return null;
         }

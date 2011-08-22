@@ -4,7 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using EyePatch.Core.Entity;
+using EyePatch.Core.Documents;
+using EyePatch.Core.Documents.Children;
+using EyePatch.Core.Documents.Extensions;
 using EyePatch.Core.Mvc.Resources;
 using EyePatch.Core.Services;
 using EyePatch.Core.Widgets;
@@ -24,25 +26,25 @@ namespace EyePatch.Core.Util.Extensions
             // get content area
             var area = contentAreas.SingleOrDefault(c => c.Name == areaName);
 
-            IList<WidgetInstance> widgetInstances = null;
+            IList<Widget> widgetInstances = null;
             if (area == null)
             {
                 var pageService = ObjectFactory.GetInstance<IPageService>();
                 area = pageService.CreateContentArea(viewBag.Page, areaName);
                 // empty since there can be no widgets
-                widgetInstances = new List<WidgetInstance>();
+                widgetInstances = new List<Widget>();
             }
             else
             {
                 // get widgets for this area
-                widgetInstances = area.WidgetInstances.OrderBy(i => i.Position).ToList();
+                widgetInstances = area.Widgets.ToList();
             }
 
             var container = new TagBuilder("div");
             container.GenerateId(areaName);
             container.AddCssClass("content-area");
             container.Attributes["data-name"] = areaName;
-            container.Attributes["data-id"] = area.ID.ToString();
+            container.Attributes["data-id"] = area.Name;
 
             var writer = htmlHelper.ViewContext.Writer;
             writer.Write(container.ToString(TagRenderMode.StartTag));
@@ -62,12 +64,12 @@ namespace EyePatch.Core.Util.Extensions
                 widgetContainer.AddCssClass("ep-widget");
 
                 // assign the id
-                widgetContainer.Attributes["data-id"] = pageWidget.ID.ToString();
+                widgetContainer.Attributes["data-id"] = pageWidget.Id;
                 writer.Write(widgetContainer.ToString(TagRenderMode.StartTag));
                 writer.Write(contents.ToString(TagRenderMode.StartTag));
 
                 // render the contents of the widget
-                widget.Render(new WidgetContext(htmlHelper.ViewContext, pageWidget, htmlHelper.ViewContext.Writer));
+                widget.Render(new WidgetContext(htmlHelper.ViewContext, pageWidget, htmlHelper.ViewContext.Writer, htmlHelper.ViewContext.HttpContext.Request.Path));
 
                 writer.Write(contents.ToString(TagRenderMode.EndTag));
                 writer.Write(widgetContainer.ToString(TagRenderMode.EndTag));
@@ -80,11 +82,11 @@ namespace EyePatch.Core.Util.Extensions
         }
 
         /// <summary>
-        /// Renders the js for the page
+        ///   Renders the js for the page
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="htmlHelper"></param>
-        /// <param name="userScriptPaths">Additional scripts supplied by the user</param>
+        /// <typeparam name = "TModel"></typeparam>
+        /// <param name = "htmlHelper"></param>
+        /// <param name = "userScriptPaths">Additional scripts supplied by the user</param>
         public static MvcHtmlString RenderJs<TModel>(this HtmlHelper<TModel> htmlHelper, params string[] userScriptPaths)
         {
             var resourceService = ObjectFactory.GetInstance<IResourceService>();
@@ -106,26 +108,33 @@ namespace EyePatch.Core.Util.Extensions
 
             builder.AppendLine(adminScriptTags);
             builder.AppendLine(pageScriptTags);
-            
+
             return new MvcHtmlString(builder.ToString());
         }
 
         /// <summary>
-        /// Renders the css for the page
+        ///   Renders the css for the page
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="htmlHelper"></param>
-        /// <param name="scripts">Additional scripts supplied by the use</param>
-        public static MvcHtmlString RenderCss<TModel>(this HtmlHelper<TModel> htmlHelper, params string[] scripts)
+        /// <typeparam name = "TModel"></typeparam>
+        /// <param name = "htmlHelper"></param>
+        /// <param name = "scripts">Additional scripts supplied by the use</param>
+        public static MvcHtmlString RenderCss<TModel>(this HtmlHelper<TModel> htmlHelper)
         {
-            return MvcHtmlString.Empty;
+            var resourceService = ObjectFactory.GetInstance<IResourceService>();
+
+            // include the widget scripts for the page
+            var css = htmlHelper.ViewContext.Controller.ViewBag.Css as ResourceCollection;
+            // we treat these separately because we don't want the admin js to be mashed or cached
+            var cssTags = resourceService.GetResourcePaths(css).ToTags();
+
+            return new MvcHtmlString(cssTags);
         }
 
         /// <summary>
-        /// The page title
+        ///   The page title
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="htmlHelper"></param>
+        /// <typeparam name = "TModel"></typeparam>
+        /// <param name = "htmlHelper"></param>
         /// <returns></returns>
         public static MvcHtmlString Title<TModel>(this HtmlHelper<TModel> htmlHelper)
         {
@@ -133,16 +142,16 @@ namespace EyePatch.Core.Util.Extensions
         }
 
         /// <summary>
-        /// The head contents
+        ///   The head contents
         /// </summary>
-        /// <typeparam name="TModel"></typeparam>
-        /// <param name="htmlHelper"></param>
+        /// <typeparam name = "TModel"></typeparam>
+        /// <param name = "htmlHelper"></param>
         /// <returns></returns>
         public static MvcHtmlString Head<TModel>(this HtmlHelper<TModel> htmlHelper)
         {
             var page = htmlHelper.ViewContext.Controller.ViewBag.Page as Page;
-            var template = page.Template;
-            var site = htmlHelper.ViewContext.Controller.ViewBag.Site as Site;
+            var template = htmlHelper.ViewContext.Controller.ViewBag.Template as Template;
+            var root = htmlHelper.ViewContext.Controller.ViewBag.Root as Folder;
 
             if (page == null)
                 throw new ApplicationException("Page cannot be found");
@@ -254,15 +263,17 @@ namespace EyePatch.Core.Util.Extensions
             {
                 var ogUrl = new TagBuilder("meta");
                 ogUrl.Attributes["property"] = "og:url";
-                ogUrl.Attributes["content"] = htmlHelper.ViewContext.RequestContext.HttpContext.Request.Url.AbsolutePath.ToLowerInvariant().ToFullyQualifiedUrl();
+                ogUrl.Attributes["content"] =
+                    htmlHelper.ViewContext.RequestContext.HttpContext.Request.Url.AbsolutePath.ToLowerInvariant().
+                        ToFullyQualifiedUrl();
                 builder.AppendLine(ogUrl.ToString(TagRenderMode.SelfClosing));
             }
 
-            if (site != null && !string.IsNullOrWhiteSpace(site.Name))
+            if (root != null && !string.IsNullOrWhiteSpace(root.Name))
             {
                 var ogSiteName = new TagBuilder("meta");
                 ogSiteName.Attributes["property"] = " og:site_name";
-                ogSiteName.Attributes["content"] = site.Name;
+                ogSiteName.Attributes["content"] = root.Name;
                 builder.AppendLine(ogSiteName.ToString(TagRenderMode.SelfClosing));
             }
 
@@ -294,7 +305,9 @@ namespace EyePatch.Core.Util.Extensions
             {
                 var ogLong = new TagBuilder("meta");
                 ogLong.Attributes["property"] = "og:longitude";
-                ogLong.Attributes["content"] = page.OgLongitude.HasValue ? page.OgLongitude.ToString() : template.OgLongitude.ToString();
+                ogLong.Attributes["content"] = page.OgLongitude.HasValue
+                                                   ? page.OgLongitude.ToString()
+                                                   : template.OgLongitude.ToString();
                 builder.AppendLine(ogLong.ToString(TagRenderMode.SelfClosing));
             }
 
@@ -302,7 +315,9 @@ namespace EyePatch.Core.Util.Extensions
             {
                 var ogLat = new TagBuilder("meta");
                 ogLat.Attributes["property"] = "og:latitude";
-                ogLat.Attributes["content"] = page.OgLatitude.HasValue ? page.OgLatitude.ToString() : template.OgLatitude.ToString();
+                ogLat.Attributes["content"] = page.OgLatitude.HasValue
+                                                  ? page.OgLatitude.ToString()
+                                                  : template.OgLatitude.ToString();
                 builder.AppendLine(ogLat.ToString(TagRenderMode.SelfClosing));
             }
 

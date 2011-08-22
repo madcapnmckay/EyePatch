@@ -9,7 +9,7 @@ namespace EyePatch.Core.Mvc.Resources
             var result = new ResourceCollection();
             foreach (var resource in collection)
             {
-                result.Add(resource);   
+                result.Add(resource);
             }
             return result;
         }

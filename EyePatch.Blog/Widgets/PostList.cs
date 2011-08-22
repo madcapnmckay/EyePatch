@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Routing;
+﻿using System.Web.Routing;
 using EyePatch.Core.Mvc.Resources;
 using EyePatch.Core.Widgets;
 
@@ -12,10 +11,10 @@ namespace EyePatch.Blog.Widgets
             get
             {
                 return new RouteValueDictionary(new
-                {
-                    controller = "Blog",
-                    action = "List"
-                });
+                                                    {
+                                                        controller = "Blog",
+                                                        action = "List"
+                                                    });
             }
         }
 

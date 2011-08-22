@@ -15,7 +15,8 @@ namespace EyePatch.Core.Util
         public static string FileContents(string fileName, Assembly assembly)
         {
             if (assembly == null) throw new ArgumentNullException("assembly");
-            var fullFileName = assembly.GetManifestResourceNames().Where(n => string.Compare(n, fileName, true) == 0).First();
+            var fullFileName =
+                assembly.GetManifestResourceNames().Where(n => string.Compare(n, fileName, true) == 0).First();
 
             var fileStream = new StreamReader(assembly.GetManifestResourceStream(fullFileName));
 

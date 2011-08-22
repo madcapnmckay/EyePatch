@@ -11,32 +11,39 @@ namespace EyePatch.Core.Mvc.Controllers
         }
 
         [HttpPost]
-        public JsonResult Add(int pageId, int widgetId, int contentAreaId, int position)
+        public JsonResult Add(string pageId, string widgetId, string contentAreaId, int position, string sourceUrl)
         {
             return
                 JsonNet(
-                    new { success = true, widget = contentManager.Widget.Add(pageId, widgetId, contentAreaId, position).ToViewModel(contentManager, this) });
+                    new
+                        {
+                            success = true,
+                            widget =
+                        contentManager.Widget.Add(pageId, widgetId, contentAreaId, position).ToViewModel(pageId,
+                                                                                                         contentManager,
+                                                                                                         this, sourceUrl)
+                        });
         }
 
         [HttpPost]
-        public JsonResult Remove(int instanceId)
+        public JsonResult Remove(string pageId, string widgetId)
         {
-            contentManager.Widget.Delete(instanceId);
+            contentManager.Widget.Delete(pageId, widgetId);
             return JsonNet(new {success = true});
         }
 
         [HttpPost]
-        public JsonResult Move(int instanceId, int contentAreaId, int position)
+        public JsonResult Move(string pageId, string widgetId, string contentAreaId, int position)
         {
-            contentManager.Widget.Move(instanceId, contentAreaId, position);
-            return JsonNet(new { success = true });
+            contentManager.Widget.Move(pageId, widgetId, contentAreaId, position);
+            return JsonNet(new {success = true});
         }
 
         [HttpPost]
-        public JsonResult Sort(int instanceId, int position)
+        public JsonResult Sort(string pageId, string widgetId, int position)
         {
-            contentManager.Widget.Sort(instanceId, position);
-            return JsonNet(new { success = true });
+            contentManager.Widget.Sort(pageId, widgetId, position);
+            return JsonNet(new {success = true});
         }
     }
 }

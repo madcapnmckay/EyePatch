@@ -15,21 +15,22 @@ namespace EyePatch.Core.Mvc.Controllers
 
 
         [HttpPost]
-        public JsonResult Info(int id)
+        public JsonResult Info(string id)
         {
-            return JsonNet(new { success = true, data = contentManager.Template.Load(id).ToViewModel() }, NullValueHandling.Include);
+            return JsonNet(new {success = true, data = contentManager.Template.Load(id).ToViewModel()},
+                           NullValueHandling.Include);
         }
 
         [HttpPost]
-        public JsonResult SearchInfo(int id)
+        public JsonResult SearchInfo(string id)
         {
-            return JsonNet(new { success = true, data = contentManager.Template.Load(id).ToSearchViewModel() });
+            return JsonNet(new {success = true, data = contentManager.Template.Load(id).ToSearchViewModel()});
         }
 
         [HttpPost]
-        public JsonResult FacebookInfo(int id)
+        public JsonResult FacebookInfo(string id)
         {
-            return JsonNet(new { success = true, data = contentManager.Template.Load(id).ToFacebookViewModel() });
+            return JsonNet(new {success = true, data = contentManager.Template.Load(id).ToFacebookViewModel()});
         }
 
         [HttpPost]
@@ -38,9 +39,9 @@ namespace EyePatch.Core.Mvc.Controllers
             if (ModelState.IsValid)
             {
                 contentManager.Template.Update(form);
-                return JsonNet(new { success = true, });
+                return JsonNet(new {success = true,});
             }
-            return JsonNet(new { success = false, });
+            return JsonNet(new {success = false,});
         }
 
         [HttpPost]
@@ -49,9 +50,9 @@ namespace EyePatch.Core.Mvc.Controllers
             if (ModelState.IsValid)
             {
                 contentManager.Template.Update(form);
-                return JsonNet(new { success = true, });
+                return JsonNet(new {success = true,});
             }
-            return JsonNet(new { success = false, });
+            return JsonNet(new {success = false,});
         }
 
         [HttpPost]
@@ -60,9 +61,9 @@ namespace EyePatch.Core.Mvc.Controllers
             if (ModelState.IsValid)
             {
                 contentManager.Template.Update(form);
-                return JsonNet(new { success = true, });
+                return JsonNet(new {success = true,});
             }
-            return JsonNet(new { success = false, });
+            return JsonNet(new {success = false,});
         }
     }
 }

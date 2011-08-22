@@ -4,8 +4,8 @@ using EyePatch.Core.Services;
 namespace EyePatch.Core
 {
     /// <summary>
-    /// An aggregator service class that provides the overall interface to the 
-    /// content management system
+    ///   An aggregator service class that provides the overall interface to the 
+    ///   content management system
     /// </summary>
     public interface IContentManager
     {
@@ -21,6 +21,6 @@ namespace EyePatch.Core
         string SiteName { get; }
         string SiteDescription { get; }
 
-        AdminPanelViewModel AdminPanel(int pageId);
+        AdminPanelViewModel AdminPanel(string pageId);
     }
 }

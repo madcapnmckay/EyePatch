@@ -1,16 +1,11 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Web;
-using EyePatch.Core.Entity;
 
 namespace EyePatch.Core.Services
 {
-    public class MediaService : ServiceBase, IMediaService
+    public class MediaService : IMediaService
     {
-        public MediaService(EyePatchDataContext context) : base(context)
-        {
-        }
-
+        #region IMediaService Members
 
         public DirectoryInfo CreateFolder(string url)
         {
@@ -39,5 +34,7 @@ namespace EyePatch.Core.Services
             var path = HttpContext.Current.Server.MapPath(url);
             File.Delete(path);
         }
+
+        #endregion
     }
 }

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using System.Web;
 
 namespace EyePatch.Core.Util.Files
 {
@@ -11,18 +8,22 @@ namespace EyePatch.Core.Util.Files
         private readonly ReaderWriterLockSlim readlock;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WriteLockDisposable"/> class.
+        ///   Initializes a new instance of the <see cref = "WriteLockDisposable" /> class.
         /// </summary>
-        /// <param name="readlock">The rw lock.</param>
+        /// <param name = "readlock">The rw lock.</param>
         public WriteLockDisposable(ReaderWriterLockSlim readlock)
         {
             this.readlock = readlock;
             readlock.EnterWriteLock();
         }
 
+        #region IDisposable Members
+
         void IDisposable.Dispose()
         {
             readlock.ExitWriteLock();
         }
+
+        #endregion
     }
 }

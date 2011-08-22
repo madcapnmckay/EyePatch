@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
-using System.Web;
+﻿using System.IO.Compression;
 using System.Web.Mvc;
 
 namespace EyePatch.Core.Mvc.ActionFilters

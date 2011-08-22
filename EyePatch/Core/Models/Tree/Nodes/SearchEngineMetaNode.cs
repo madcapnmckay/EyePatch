@@ -1,19 +1,21 @@
-﻿using NKnockoutUI.Tree;
+﻿using EyePatch.Core.Documents;
+using EyePatch.Core.Documents.Children;
+using NKnockoutUI.Tree;
 
 namespace EyePatch.Core.Models.Tree.Nodes
 {
     public class SearchEngineMetaNode : Node
     {
-        public SearchEngineMetaNode(Entity.Page page)
+        public SearchEngineMetaNode(PageItem page)
         {
-            Id = page.ID.ToString();
+            Id = page.Id;
             CssClass = "search";
             Name = "Search";
         }
 
-        public SearchEngineMetaNode(Entity.Template template)
+        public SearchEngineMetaNode(Template template)
         {
-            Id = template.ID.ToString();
+            Id = template.Id;
             CssClass = "search";
             Type = "templateSearch";
             Name = "Search";

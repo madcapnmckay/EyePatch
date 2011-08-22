@@ -11,10 +11,10 @@ namespace EyePatch.Blog.Widgets
             get
             {
                 return new RouteValueDictionary(new
-                {
-                    controller = "Blog",
-                    action = "TagCloud"
-                });
+                                                    {
+                                                        controller = "Blog",
+                                                        action = "TagCloud"
+                                                    });
             }
         }
 

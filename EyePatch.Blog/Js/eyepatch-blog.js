@@ -198,26 +198,40 @@
                 onFinish();
             },
             saveEditable: function (contenteditable, html) {
-                /*var id = $(contenteditable).parent().attr('data-id');
-
-                ep.postJson('/htmlwidget/update', { contents: html, id: id }, function () {
-                $.noticeAdd({ text: "Page updated", stay: false, type: 'success' });
-                });*/
-                alert("Save post");
+                if (blogPostId) {
+                    ep.postJson('/blogadmin/body', { html: html, postId: blogPostId }, function () {
+                        $.noticeAdd({ text: "Page updated", stay: false, type: 'success' });
+                    });
+                }
             }
         }
     };
 
     $('.content-area').delegate('.ep-widget-blog-body', 'widget-initialized', function () {
-        var $element = $(this), $contents = $('.post-body', $element);
+        var $element = $(this), $contents = $('.post-body', $element), isInvalid = $('.blog-post-invalid', $element).length > 0;
 
-        if (ep.blog.post.editorSettings === undefined) {
-            ep.blog.post.editorSettings = new ko.editable.settings(ep.blog.post.saveEditable);
-        }
+        if (!isInvalid) {
 
-        if ($contents.attr('data-bind') === undefined) {
-            $contents.attr('data-bind', 'editable : editorSettings');
-            ko.applyBindings(ep.blog.post, $contents.get(0));
+            if (ep.blog.post.editorSettings === undefined) {
+                ep.blog.post.editorSettings = new ko.editable.settings({
+                    handler: ep.blog.post.saveEditable,
+                    modalCssClass: 'eyepatch-admin-window',
+                    imagePickerHandler: function (onSuccess) {
+                        ep.postJson(ep.urls.mediaFolder.all, {}, function (data) {
+                            var images = [];
+                            for (var i = 0; i < data.images.length; i += 1) {
+                                images.push({ src: data.images[i] });
+                            }
+                            onSuccess(images);
+                        });
+                    }
+                });
+            }
+
+            if ($contents.attr('data-bind') === undefined) {
+                $contents.attr('data-bind', 'editable : editorSettings');
+                ko.applyBindings(ep.blog.post, $contents.get(0));
+            }
         }
     });
 } ());

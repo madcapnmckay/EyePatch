@@ -1,19 +1,21 @@
-﻿using NKnockoutUI.Tree;
+﻿using EyePatch.Core.Documents;
+using EyePatch.Core.Documents.Children;
+using NKnockoutUI.Tree;
 
 namespace EyePatch.Core.Models.Tree.Nodes
 {
     public class FacebookMetaNode : Node
     {
-        public FacebookMetaNode(Entity.Page page)
+        public FacebookMetaNode(PageItem page)
         {
-            Id = page.ID.ToString();
+            Id = page.Id;
             CssClass = "facebook";
             Name = "Facebook";
         }
 
-        public FacebookMetaNode(Entity.Template template)
+        public FacebookMetaNode(Template template)
         {
-            Id = template.ID.ToString();
+            Id = template.Id;
             CssClass = "facebook";
             Type = "templateFacebook";
             Name = "Facebook";

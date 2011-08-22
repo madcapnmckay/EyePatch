@@ -18,6 +18,32 @@ namespace EyePatch.Core.Mvc.ActionFilters
             this.response = response;
         }
 
+        public override bool CanRead
+        {
+            get { return true; }
+        }
+
+        public override bool CanSeek
+        {
+            get { return true; }
+        }
+
+        public override bool CanWrite
+        {
+            get { return true; }
+        }
+
+        public override long Length
+        {
+            get { return response.Length; }
+        }
+
+        public override long Position
+        {
+            get { return response.Position; }
+            set { response.Position = value; }
+        }
+
         public override void Flush()
         {
             response.Flush();
@@ -51,32 +77,6 @@ namespace EyePatch.Core.Mvc.ActionFilters
             // write the data to stream 
             var outdata = Encoding.Default.GetBytes(s);
             response.Write(outdata, 0, outdata.GetLength(0));
-        }
-
-        public override bool CanRead
-        {
-            get { return true; }
-        }
-
-        public override bool CanSeek
-        {
-            get { return true; }
-        }
-
-        public override bool CanWrite
-        {
-            get { return true; }
-        }
-
-        public override long Length
-        {
-            get { return response.Length; }
-        }
-
-        public override long Position
-        {
-            get { return response.Position; }
-            set { response.Position = value; }
         }
     }
 }

@@ -2,26 +2,31 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
+using EyePatch.Core.Documents;
 using EyePatch.Core.Models.Forms;
-using EyePatch.Core.Util.Extensions;
-using EyePatch.Core.Entity;
 using EyePatch.Core.Util;
+using Raven.Abstractions.Data;
+using Raven.Client;
+using Raven.Json.Linq;
 
 namespace EyePatch.Core.Services
 {
     public class TemplateService : ServiceBase, ITemplateService
     {
-        public TemplateService(EyePatchDataContext context) : base(context) {}
+        public TemplateService(IDocumentSession session) : base(session)
+        {
+        }
+
+        #region ITemplateService Members
 
         public Template DefaultTemplate
         {
-            get { return db.Templates.SingleOrDefault(t => t.IsDefault); }
+            get { return session.Query<Template>().SingleOrDefault(t => t.IsDefault); }
         }
 
-        public Template Load(int id)
+        public Template Load(string id)
         {
-            var template = db.Templates.SingleOrDefault(t => t.ID == id);
+            var template = session.Load<Template>(id);
 
             if (template == null)
                 throw new ApplicationException("Template does not exist");
@@ -31,12 +36,7 @@ namespace EyePatch.Core.Services
 
         public IEnumerable<Template> All()
         {
-            return db.Templates.ListFromCache();
-        }
-
-        public bool Exists(string path)
-        {
-            return db.Templates.Where(t => string.Compare(path.Trim(), t.ViewPath, false) == 0).Any();
+            return session.Query<Template>().Take(1024);
         }
 
         public Template Create(string name, string path)
@@ -46,18 +46,17 @@ namespace EyePatch.Core.Services
 
         public Template Create(string name, string path, string controller, string action)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (path == null) throw new ArgumentNullException("path");
+            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException("name");
+            if (string.IsNullOrWhiteSpace(path)) throw new ArgumentNullException("path");
 
             var template = new Template
-            {
-                Name = name,
-                ViewPath = path,
-                Controller = controller ?? "CMS",
-                Action = action ?? "Service"
-            };
-            db.Templates.InsertOnSubmit(template);
-            db.SubmitChanges();
+                               {
+                                   Name = name,
+                                   ViewPath = path,
+                                   Controller = controller ?? "Content",
+                                   Action = action ?? "Service"
+                               };
+            session.Store(template);
             return template;
         }
 
@@ -73,6 +72,7 @@ namespace EyePatch.Core.Services
                     Create(name, viewPath);
                 }
             }
+            session.SaveChanges();
         }
 
         public void Update(TemplateForm form)
@@ -81,7 +81,23 @@ namespace EyePatch.Core.Services
 
             template.AnalyticsKey = form.AnalyticsKey;
 
-            db.SubmitChanges();
+            // update all pages with this analytics key
+            session.Advanced.DatabaseCommands.UpdateByIndex("PagesByTemplate",
+                                                            new IndexQuery
+                                                                {
+                                                                    Query = "TemplateID:" + template.Id
+                                                                }, new[]
+                                                                       {
+                                                                           new PatchRequest
+                                                                               {
+                                                                                   Type = PatchCommandType.Set,
+                                                                                   Name = "AnalyticsKey",
+                                                                                   Value =
+                                                                                       RavenJToken.Parse(
+                                                                                           form.AnalyticsKey)
+                                                                               }
+                                                                       }, false);
+            session.SaveChanges();
         }
 
         public void Update(SearchForm form)
@@ -96,7 +112,7 @@ namespace EyePatch.Core.Services
             template.Copyright = form.Copyright;
             template.Robots = form.Robots;
 
-            db.SubmitChanges();
+            session.SaveChanges();
         }
 
         public void Update(FacebookForm form)
@@ -115,7 +131,14 @@ namespace EyePatch.Core.Services
             template.OgLongitude = form.Longitude;
             template.OgLatitude = form.Latitude;
 
-            db.SubmitChanges();
+            session.SaveChanges();
+        }
+
+        #endregion
+
+        public bool Exists(string path)
+        {
+            return session.Query<Template>().Any(t => path.Trim() == t.ViewPath);
         }
     }
 }

@@ -6,7 +6,10 @@ namespace EyePatch.Core.Mvc.Resources
 {
     public class Resource : IEquatable<Resource>
     {
-        protected static Regex externalRegex = new Regex("^(http(s)?:)?//", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+        protected static Regex externalRegex = new Regex("^(http(s)?:)?//",
+                                                         RegexOptions.IgnoreCase | RegexOptions.Compiled |
+                                                         RegexOptions.Multiline);
+
         protected string contentType;
 
         public Resource(string path, IResourcePathProvider pathProvider, MatchMode matchMode)
@@ -24,7 +27,10 @@ namespace EyePatch.Core.Mvc.Resources
             }
         }
 
-        public Resource(string path, MatchMode matchMode) : this(path, new ResourcePathProvider(), matchMode) { }
+        public Resource(string path, MatchMode matchMode) : this(path, new ResourcePathProvider(), matchMode)
+        {
+        }
+
         public Resource(string path, MatchMode matchMode, string contentType)
             : this(path, new ResourcePathProvider(), matchMode)
         {
@@ -34,14 +40,14 @@ namespace EyePatch.Core.Mvc.Resources
         public virtual string Url { get; set; }
         public virtual string PhysicalFilePath { get; set; }
 
-        public string FileName { get { return Path.GetFileName(PhysicalFilePath); } }
+        public string FileName
+        {
+            get { return Path.GetFileName(PhysicalFilePath); }
+        }
 
         public virtual FileInfo DependentFile
         {
-            get
-            {
-                return new FileInfo(PhysicalFilePath);
-            }
+            get { return new FileInfo(PhysicalFilePath); }
         }
 
         public string ContentType
@@ -62,24 +68,12 @@ namespace EyePatch.Core.Mvc.Resources
 
         public string Extension
         {
-            get { return Path.GetExtension(PhysicalFilePath); }
-        }
-
-        public virtual string FileContents()
-        {
-            var fileInfo = new FileInfo(PhysicalFilePath);
-            using (var reader = fileInfo.OpenText()) { 
-                return reader.ReadToEnd(); 
-            } 
+            get { return ContentType == "text/javascript" ? ".js" : ".css"; }
         }
 
         public MatchMode MatchMode { get; protected set; }
 
-        public static string Normalize(string path)
-        {
-            if (path == null) throw new ArgumentNullException("path");
-            return externalRegex.Replace(path, string.Empty);
-        }
+        #region IEquatable<Resource> Members
 
         public bool Equals(Resource other)
         {
@@ -90,6 +84,23 @@ namespace EyePatch.Core.Mvc.Resources
             if (ReferenceEquals(this, other)) return true;
 
             return string.Compare(Normalize(Url), Normalize(other.Url), true) == 0;
+        }
+
+        #endregion
+
+        public virtual string FileContents()
+        {
+            var fileInfo = new FileInfo(PhysicalFilePath);
+            using (var reader = fileInfo.OpenText())
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
+        public static string Normalize(string path)
+        {
+            if (path == null) throw new ArgumentNullException("path");
+            return externalRegex.Replace(path, string.Empty);
         }
 
         public override int GetHashCode()

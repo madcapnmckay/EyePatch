@@ -16,7 +16,7 @@ namespace EyePatch.Blog.Models
             Height = 500;
             IsMinimized = true;
 
-            Buttons.Add(new Button { Title = "click here to minimize", IconCssClass = "minimize", OnClick = "minimize" });
+            Buttons.Add(new Button {Title = "click here to minimize", IconCssClass = "minimize", OnClick = "minimize"});
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Routing;
+﻿using System.Web.Routing;
 using EyePatch.Core.Mvc.Resources;
 
 namespace EyePatch.Core.Widgets
@@ -13,10 +12,10 @@ namespace EyePatch.Core.Widgets
             get
             {
                 return new RouteValueDictionary(new
-                {
-                    controller = "Menu",
-                    action = "TopLevel"
-                });
+                                                    {
+                                                        controller = "Menu",
+                                                        action = "TopLevel"
+                                                    });
             }
         }
 
@@ -37,7 +36,7 @@ namespace EyePatch.Core.Widgets
 
         public override string CssClass
         {
-            get { return "ep-widget-html"; }
+            get { return "ep-widget-menu"; }
         }
 
         public override ResourceCollection Js
@@ -57,7 +56,7 @@ namespace EyePatch.Core.Widgets
                 if (adminJs == null)
                 {
                     adminJs = new ResourceCollection()
-                                    .Load("/core/widgets/simplemenu/eyepatch-widgets-menu-admin.js", MatchMode.Path);
+                        .Load("/core/widgets/simplemenu/eyepatch-widgets-menu-admin.js", MatchMode.Path);
                 }
                 return adminJs;
             }
@@ -69,5 +68,3 @@ namespace EyePatch.Core.Widgets
         }
     }
 }
-
-

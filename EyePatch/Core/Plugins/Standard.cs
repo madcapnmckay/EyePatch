@@ -9,6 +9,8 @@ namespace EyePatch.Core.Plugins
 {
     public class Standard : IEyePatchPlugin
     {
+        #region IEyePatchPlugin Members
+
         public string Name
         {
             get { return "Standard"; }
@@ -16,9 +18,7 @@ namespace EyePatch.Core.Plugins
 
         public IList<Type> Widgets
         {
-            get {
-                return new List<Type> { typeof(BasicHtmlWidget), typeof(SimpleMenulWidget) };
-            }
+            get { return new List<Type> {typeof (BasicHtmlWidget), typeof (SimpleMenulWidget)}; }
         }
 
         public IList<Window> Windows
@@ -41,12 +41,6 @@ namespace EyePatch.Core.Plugins
             get { return "Ian Mckay"; }
         }
 
-        public void Register()
-        {
-            // nothing to do
-            return;
-        }
-
         public void Startup()
         {
             // nothing to do
@@ -57,5 +51,7 @@ namespace EyePatch.Core.Plugins
         {
             return null;
         }
+
+        #endregion
     }
 }

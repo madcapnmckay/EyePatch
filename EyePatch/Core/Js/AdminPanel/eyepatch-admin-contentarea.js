@@ -57,20 +57,21 @@
             };
             this.handlers = {
                 onMove: function (contentArea, widget, position) {
-                    ep.postJson(ep.urls.widget.move, { instanceId: widget.id, position: position, contentAreaId: contentArea.id });
+                    ep.postJson(ep.urls.widget.move, { pageId: ep.page.id, widgetId: widget.id, position: position, contentAreaId: contentArea.id });
                 },
                 onSort: function (widget, position) {
-                    ep.postJson(ep.urls.widget.sort, { instanceId: widget.id, position: position });
+                    ep.postJson(ep.urls.widget.sort, { pageId: ep.page.id, widgetId: widget.id, position: position });
                 },
                 onDelete: function (widget, onSuccess) {
-                    ep.postJson(ep.urls.widget.remove, { instanceId: widget.id }, onSuccess);
+                    ep.postJson(ep.urls.widget.remove, { pageId: ep.page.id, widgetId: widget.id }, onSuccess);
                 },
                 onAdd: function (contentArea, widgetNode, position, element, onSuccess) {
                     var data = {
                         pageId: ep.page.id,
                         widgetId: widgetNode.id(),
                         contentAreaId: contentArea.id,
-                        position: position
+                        position: position,
+                        sourceUrl: document.location.pathname
                     };
 
                     ep.postJson(ep.urls.widget.add, data, function (data) {

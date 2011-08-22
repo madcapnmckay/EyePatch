@@ -34,16 +34,28 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin">
-      <HintPath>..\packages\AjaxMin.4.19.4141.18463\lib\AjaxMin.dll</HintPath>
+    <Reference Include="AsyncCtpLibrary, Version=1.0.4107.18181, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\RavenDB.1.0.0.427\lib\net40\AsyncCtpLibrary.dll</HintPath>
     </Reference>
     <Reference Include="EcmaScript.NET.modified">
       <HintPath>..\packages\YUICompressor.NET.1.5.0.0\lib\NET35\EcmaScript.NET.modified.dll</HintPath>
     </Reference>
+    <Reference Include="Esent.Interop">
+      <HintPath>..\packages\RavenDB-Embedded.1.0.0.427\lib\net40\Esent.Interop.dll</HintPath>
+    </Reference>
     <Reference Include="HibernatingRhinos.Profiler.Appender.v4.0">
       <HintPath>..\packages\LinqToSqlProfiler.1.0.0.905\lib\Net40\HibernatingRhinos.Profiler.Appender.v4.0.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\packages\RavenDB-Embedded.1.0.0.427\lib\net40\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net">
+      <HintPath>..\packages\RavenDB-Embedded.1.0.0.427\lib\net40\Lucene.Net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.4.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -51,9 +63,58 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\NKnockoutUI.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\RavenDB.1.0.0.427\lib\net40\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\packages\RavenDB.1.0.0.427\lib\net40\Raven.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Debug">
+      <HintPath>..\packages\RavenDB.1.0.0.427\lib\net40\Raven.Client.Debug.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Embedded">
+      <HintPath>..\packages\RavenDB-Embedded.1.0.0.427\lib\net40\Raven.Client.Embedded.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.Lightweight, Version=1.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\packages\RavenDB.1.0.0.427\lib\net40\Raven.Client.Lightweight.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Client.MvcIntegration">
+      <HintPath>..\packages\RavenDB.1.0.0.427\lib\net40\Raven.Client.MvcIntegration.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Database">
+      <HintPath>..\packages\RavenDB-Embedded.1.0.0.427\lib\net40\Raven.Database.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Http">
+      <HintPath>..\packages\RavenDB-Embedded.1.0.0.427\lib\net40\Raven.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Json, Version=1.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
+      <HintPath>..\packages\RavenDB.1.0.0.427\lib\net40\Raven.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Munin">
+      <HintPath>..\packages\RavenDB-Embedded.1.0.0.427\lib\net40\Raven.Munin.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Storage.Esent">
+      <HintPath>..\packages\RavenDB-Embedded.1.0.0.427\lib\net40\Raven.Storage.Esent.dll</HintPath>
+    </Reference>
+    <Reference Include="Raven.Storage.Managed">
+      <HintPath>..\packages\RavenDB-Embedded.1.0.0.427\lib\net40\Raven.Storage.Managed.dll</HintPath>
+    </Reference>
+    <Reference Include="RavenDBMembership">
+      <HintPath>..\Lib\RavenDBMembership.dll</HintPath>
+    </Reference>
+    <Reference Include="Spatial.Net">
+      <HintPath>..\packages\RavenDB-Embedded.1.0.0.427\lib\net40\Spatial.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="SpellChecker.Net">
+      <HintPath>..\packages\RavenDB-Embedded.1.0.0.427\lib\net40\SpellChecker.Net.dll</HintPath>
+    </Reference>
     <Reference Include="StructureMap">
       <HintPath>..\packages\structuremap.2.6.2\lib\StructureMap.dll</HintPath>
     </Reference>
+    <Reference Include="StructureMapAdapter">
+      <HintPath>..\packages\CommonServiceLocator.StructureMapAdapter.1.1.0.2\lib\StructureMapAdapter.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Transactions" />
@@ -89,18 +150,20 @@
   <ItemGroup>
     <Compile Include="App_Start\LinqToSqlProfilerBootstrapper.cs" />
     <Compile Include="Core\ContentManager.cs" />
-    <Compile Include="Core\Entity\CMS.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CMS.dbml</DependentUpon>
-    </Compile>
-    <Compile Include="Core\Entity\EyePatchDataContext.cs" />
-    <Compile Include="Core\Entity\IAuditCreatedDate.cs" />
-    <Compile Include="Core\Entity\IAuditModifiedDate.cs" />
-    <Compile Include="Core\Entity\MediaFile.cs" />
-    <Compile Include="Core\Entity\Page.cs" />
-    <Compile Include="Core\Entity\Plugin.cs" />
-    <Compile Include="Core\Entity\WidgetInstance.cs" />
+    <Compile Include="Core\Documents\Children\ContentArea.cs" />
+    <Compile Include="Core\Documents\Children\IFolderItem.cs" />
+    <Compile Include="Core\Documents\Children\PageItem.cs" />
+    <Compile Include="Core\Documents\Extensions\DocumentExtensions.cs" />
+    <Compile Include="Core\Documents\Folder.cs" />
+    <Compile Include="Core\Documents\Children\FolderItem.cs" />
+    <Compile Include="Core\Documents\Indexes\PagesByUrl.cs" />
+    <Compile Include="Core\Documents\Indexes\PagesByTemplate.cs" />
+    <Compile Include="Core\Documents\Page.cs" />
+    <Compile Include="Core\Documents\Site.cs" />
+    <Compile Include="Core\Documents\Template.cs" />
+    <Compile Include="Core\Documents\Children\Widget.cs" />
+    <Compile Include="Core\Audit\IAuditCreatedDate.cs" />
+    <Compile Include="Core\Audit\IAuditModifiedDate.cs" />
     <Compile Include="Core\IoC\StructureMapControllerActivator.cs" />
     <Compile Include="Core\IoC\StructureMapControllerFactory.cs" />
     <Compile Include="Core\Models\AdminPanelViewModel.cs" />
@@ -193,7 +256,6 @@
     <Compile Include="Core\Services\SqlServiceMembershipService.cs" />
     <Compile Include="Core\Services\TemplateService.cs" />
     <Compile Include="Core\Services\WidgetService.cs" />
-    <Compile Include="Core\Util\DataSourceTools.cs" />
     <Compile Include="Core\Util\EmbeddedResourceTools.cs" />
     <Compile Include="Core\Util\Extensions\HtmlExtensions.cs" />
     <Compile Include="Core\Util\AccountValidation.cs" />
@@ -203,7 +265,6 @@
     <Compile Include="Core\Util\Extensions\FormExtensions.cs" />
     <Compile Include="Core\Util\Extensions\MembershipExtensions.cs" />
     <Compile Include="Core\Util\Extensions\PathExtensions.cs" />
-    <Compile Include="Core\Util\Extensions\QueryableExtensions.cs" />
     <Compile Include="Core\Util\Extensions\ResourceExtensions.cs" />
     <Compile Include="Core\Util\Extensions\StringExtensions.cs" />
     <Compile Include="Core\Util\Extensions\UrlHelperExtensions.cs" />
@@ -297,6 +358,7 @@
     <Content Include="Core\Js\Codemirror\rst\index.html" />
     <Content Include="Core\Js\Codemirror\rst\rst.css" />
     <Content Include="Core\Js\Codemirror\rst\rst.js" />
+    <Content Include="Core\Js\Codemirror\runmode.js" />
     <Content Include="Core\Js\Codemirror\scheme\index.html" />
     <Content Include="Core\Js\Codemirror\scheme\scheme.js" />
     <Content Include="Core\Js\Codemirror\smalltalk\index.html" />
@@ -368,13 +430,7 @@
     <Content Include="Core\Js\Knockout-UI\ui-window.js" />
     <Content Include="Core\Js\knockout.mapping.js" />
     <Content Include="Core\Js\splitter.js" />
-    <Content Include="Core\SQL\InstallCommon.sql" />
-    <Content Include="Core\SQL\InstallEyepatch.sql" />
-    <Content Include="Core\SQL\InstallMembership.sql" />
-    <Content Include="Core\SQL\InstallPersonalization.sql" />
-    <Content Include="Core\SQL\InstallProfile.SQL" />
-    <Content Include="Core\SQL\InstallRoles.sql" />
-    <Content Include="Core\SQL\InstallWebEventSqlProvider.sql" />
+    <Content Include="Core\Widgets\Html\eyepatch-widgets-codeblock.js" />
     <Content Include="Core\Widgets\SimpleMenu\eyepatch-widgets-menu-admin.js" />
     <Content Include="Global.asax" />
     <Content Include="Core\Js\json2.js" />
@@ -404,11 +460,6 @@
     <Content Include="Core\Css\mash.chirp.config">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="Core\Entity\CMS.dbml">
-      <Generator>MSLinqToSQLGenerator</Generator>
-      <LastGenOutput>CMS.designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="Core\Mvc\Views\Admin\Install.cshtml" />
     <Content Include="Core\Mvc\Views\Web.config" />
     <Content Include="Templates\Web.config" />
@@ -424,11 +475,6 @@
     <Content Include="Core\Mvc\Views\Admin\Bootstrapper.cshtml" />
     <Content Include="Core\Mvc\Views\Shared\Error.cshtml" />
     <Content Include="Core\Mvc\Views\Menu\SimpleMenu.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Core\Entity\CMS.dbml.layout">
-      <DependentUpon>CMS.dbml</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />

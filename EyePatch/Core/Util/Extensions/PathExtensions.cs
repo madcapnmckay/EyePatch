@@ -6,6 +6,9 @@ namespace EyePatch.Core.Util.Extensions
 {
     public static class PathExtensions
     {
+        private static readonly Regex isFullQualified = new Regex("^http(s)?://.$",
+                                                                  RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         public static string ToRelativeUrl(this string physicalPath)
         {
             if (HttpContext.Current.Request.PhysicalApplicationPath == null)
@@ -13,8 +16,6 @@ namespace EyePatch.Core.Util.Extensions
 
             return physicalPath.Replace(HttpContext.Current.Request.PhysicalApplicationPath, "/").Replace("\\", "/");
         }
-
-        private static Regex isFullQualified = new Regex("^http(s)?://.$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public static bool IsFullyQualified(this string url)
         {

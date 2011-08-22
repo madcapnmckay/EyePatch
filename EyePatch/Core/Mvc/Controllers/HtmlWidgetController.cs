@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace EyePatch.Core.Mvc.Controllers
 {
@@ -14,10 +10,10 @@ namespace EyePatch.Core.Mvc.Controllers
         }
 
         [ValidateInput(false), HttpPost]
-        public JsonResult Update(int id, string contents)
+        public JsonResult Update(string pageId, string id, string contents)
         {
-            contentManager.Widget.Update(id, contents);
-            return Json(new { success = true });
+            contentManager.Widget.Update(pageId, id, contents);
+            return Json(new {success = true});
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using EyePatch.Core.Entity;
+using EyePatch.Core.Documents;
 using EyePatch.Core.Models.Forms;
 
 namespace EyePatch.Core.Services
@@ -8,7 +8,7 @@ namespace EyePatch.Core.Services
     {
         Template DefaultTemplate { get; }
 
-        Template Load(int id);
+        Template Load(string id);
         IEnumerable<Template> All();
 
         Template Create(string name, string path);

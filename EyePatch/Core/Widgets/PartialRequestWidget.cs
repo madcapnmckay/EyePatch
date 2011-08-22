@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -10,6 +9,8 @@ namespace EyePatch.Core.Widgets
     public abstract class PartialRequestWidget : IWidget
     {
         public abstract RouteValueDictionary RouteValues { get; }
+
+        #region IWidget Members
 
         public abstract string Name { get; }
         public abstract object InitialContents { get; }
@@ -28,9 +29,12 @@ namespace EyePatch.Core.Widgets
             foreach (var p1 in RouteValues)
                 rd.Values.Add(p1.Key, p1.Value);
 
-            // add all existing route data values that don't clash
+            // add all existing route data values that doesn't clash
             foreach (var p2 in context.RouteData.Values.Where(r => !rd.Values.ContainsKey(r.Key)))
                 rd.Values.Add(p2.Key, p2.Value);
+
+            // add page to the route data
+            rd.Values.Add("sourceUrl", context.SourceUrl);
 
             // add widget to the route data
             //rd.Values.Add("instance", Widget);
@@ -48,5 +52,7 @@ namespace EyePatch.Core.Widgets
 
             handler.ProcessRequest(ctx);
         }
+
+        #endregion
     }
 }

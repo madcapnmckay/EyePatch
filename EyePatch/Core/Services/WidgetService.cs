@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using EyePatch.Core.Documents;
+using EyePatch.Core.Documents.Children;
 using EyePatch.Core.Plugins;
-using EyePatch.Core.Util;
 using EyePatch.Core.Widgets;
-using EyePatch.Core.Entity;
+using Raven.Client;
+using StructureMap;
 
 namespace EyePatch.Core.Services
 {
@@ -13,124 +15,130 @@ namespace EyePatch.Core.Services
     {
         protected IPageService pageService;
 
-        public WidgetService(EyePatchDataContext context, IPageService pageService) : base(context)
+        public WidgetService(IDocumentSession session, IPageService pageService)
+            : base(session)
         {
             this.pageService = pageService;
         }
 
-        public IEnumerable<Widget> All()
-        {
-            if (Cache[EyePatchConfig.WidgetsList] == null)
-                Cache[EyePatchConfig.WidgetsList] = db.Widgets.ToList();
+        #region IWidgetService Members
 
-            return Cache[EyePatchConfig.WidgetsList] as IList<Widget>;
+        protected IEnumerable<IWidget> All()
+        {
+            return ObjectFactory.GetAllInstances<IEyePatchPlugin>().SelectMany(p => p.Widgets).Select(w => ObjectFactory.GetInstance(w) as IWidget);
         }
 
-        public Widget Load(int id)
+        public Widget Add(string pageId, string widgetTypeId, string newContentArea, int position)
         {
-            var widget = db.Widgets.SingleOrDefault(w => w.ID == id);
+            var page = pageService.Load(pageId);
 
+            var contentArea = page.ContentAreas.SingleOrDefault(c => c.Name == newContentArea);
+            if (contentArea == null)
+                throw new ApplicationException("The content area does not exist");
+
+            // find the widget
+            var widget = All().SingleOrDefault(w => w.GetType().GetHashCode().ToString() == widgetTypeId);
             if (widget == null)
-                throw new ApplicationException("Widget does not exist");
+                throw new ApplicationException("Widget type cannot be found");
 
-            return widget;
-        }
-
-        public Widget Load(Type type)
-        {
-            return db.Widgets.SingleOrDefault(w => w.Type == type.AssemblyQualifiedName);
-        }
-
-        public WidgetInstance LoadInstance(int instanceId)
-        {
-            var instance = db.WidgetInstances.SingleOrDefault(w => w.ID == instanceId);
-
-            if (instance == null)
-                throw new ApplicationException("Page widget does not exist");
-
+            var instance = new Widget(Guid.NewGuid().ToString(), widget.GetType().AssemblyQualifiedName) {Contents = string.Empty};
+            contentArea.Widgets.Insert(position, instance);
+            session.SaveChanges();
+            pageService.ClearOutputCacheDependency(HttpContext.Current);
             return instance;
         }
 
-        public WidgetInstance Add(int pageId, int widgetId, int contentAreaId, int position)
+        public void Delete(string pageId, string widgetId)
         {
-            var widget = Load(widgetId);
+            var page = pageService.Load(pageId);
+            ContentArea contentArea = null;
+            Widget widget = null;
+            FindWidget(page, widgetId, out widget, out contentArea);
+
+            if (widget == null)
+                throw new ApplicationException("Widget cannot be found");
+
+            contentArea.Widgets.Remove(widget);
+            session.SaveChanges();
+
+            pageService.ClearOutputCacheDependency(HttpContext.Current);
+        }
+
+        public void Update(string pageId, string widgetId, string contents)
+        {
             var page = pageService.Load(pageId);
 
-            var contentArea = page.ContentAreas.SingleOrDefault(c => c.ID == contentAreaId);
+            ContentArea contentArea;
+            Widget widget;
+            FindWidget(page, widgetId, out widget, out contentArea);
 
-            if (contentArea == null)
-                throw new ApplicationException("The content area does not exist");
+            if (widget == null)
+                throw new ApplicationException("Widget cannot be found");
 
-            var pageWidget = new WidgetInstance()
+            widget.Contents = contents;
+            session.SaveChanges();
+
+            pageService.ClearOutputCacheDependency(HttpContext.Current);
+        }
+
+        public void Move(string pageId, string widgetId, string newContentArea, int position)
+        {
+            var page = pageService.Load(pageId);
+
+            ContentArea contentArea;
+            Widget widget;
+            FindWidget(page, widgetId, out widget, out contentArea);
+
+            if (widget == null || contentArea == null)
+                throw new ApplicationException("Widget cannot be found");
+
+            var destination = page.ContentAreas.SingleOrDefault(c => string.Compare(newContentArea, c.Name, true) == 0);
+
+            if (destination == null)
+                throw new ApplicationException("Destination content area cannot be found");
+
+            contentArea.Widgets.Remove(widget);
+            destination.Widgets.Insert(position, widget);
+
+            session.SaveChanges();
+
+            pageService.ClearOutputCacheDependency(HttpContext.Current);
+        }
+
+        public void Sort(string pageId, string widgetId, int position)
+        {
+            var page = pageService.Load(pageId);
+
+            ContentArea contentArea;
+            Widget widget;
+            FindWidget(page, widgetId, out widget, out contentArea);
+
+            if (widget == null || contentArea == null)
+                throw new ApplicationException("Widget cannot be found");
+
+            contentArea.Widgets.Remove(widget);
+            contentArea.Widgets.Insert(position, widget);
+
+            session.SaveChanges();
+
+            pageService.ClearOutputCacheDependency(HttpContext.Current);
+        }
+
+        #endregion
+
+        protected void FindWidget(Page page, string widgetId, out Widget widget, out ContentArea contentArea)
+        {
+            widget = null;
+            contentArea = null;
+            foreach (var area in page.ContentAreas)
             {
-                ContentArea = contentArea,
-                Contents = string.Empty,
-                Widget = widget,
-                Position = position
-            };
-
-            db.WidgetInstances.InsertOnSubmit(pageWidget);
-            db.WidgetInstances.Where(i => i.ContentArea.ID == pageWidget.ContentArea.ID && i.Position >= pageWidget.Position).ToList().ForEach(s => s.Position++);
-            db.SubmitChanges();
-            pageService.InvalidatePageCache();
-            pageService.ClearOutputCacheDependency(HttpContext.Current);
-            return pageWidget;
-        }
-
-        public void Delete(int id)
-        {
-            var instance = LoadInstance(id);
-
-            db.WidgetInstances.DeleteOnSubmit(instance);
-            // update position values
-            db.WidgetInstances.Where(i => i.ContentArea.ID == instance.ContentArea.ID && i.Position >= instance.Position && i.ID != instance.ID).ToList().ForEach(s => s.Position--);
-            db.SubmitChanges();
-            pageService.InvalidatePageCache();
-            pageService.ClearOutputCacheDependency(HttpContext.Current);
-        }
-
-        public void Update(int id, string contents)
-        {
-            var instance = LoadInstance(id);
-            instance.Contents = contents;
-            db.SubmitChanges();
-            pageService.InvalidatePageCache();
-            pageService.ClearOutputCacheDependency(HttpContext.Current);
-        }
-
-        public void Move(int id, int contentAreaId, int position)
-        {
-            var instance = LoadInstance(id);
-            if (instance.ContentAreaID == contentAreaId)
-            {
-                Sort(id, position);
-                return;
+                foreach (var w in area.Widgets.Where(w => w.Id == widgetId))
+                {
+                    contentArea = area;
+                    widget = w;
+                    break;
+                }
             }
-
-            var contentArea = db.ContentAreas.SingleOrDefault(c => c.ID == contentAreaId);
-
-            if (contentArea == null)
-                throw new ApplicationException("The content area does not exist");
-
-            instance.ContentArea = contentArea;
-            instance.Position = position;
-            db.WidgetInstances.Where(i => i.ContentArea.ID == instance.ContentArea.ID && i.Position >= instance.Position && i.ID != instance.ID).ToList().ForEach(s => s.Position++);
-            db.SubmitChanges();
-            pageService.InvalidatePageCache();
-            pageService.ClearOutputCacheDependency(HttpContext.Current);
-        }
-
-        public void Sort(int id, int position)
-        {
-            var instance = LoadInstance(id);
-            if (instance.Position == position)
-                return;
-
-            instance.Position = position;
-            db.WidgetInstances.Where(i => i.ContentArea.ID == instance.ContentArea.ID && i.Position >= instance.Position && i.ID != instance.ID).ToList().ForEach(s => s.Position++);
-            db.SubmitChanges();
-            pageService.InvalidatePageCache();
-            pageService.ClearOutputCacheDependency(HttpContext.Current);
         }
     }
 }

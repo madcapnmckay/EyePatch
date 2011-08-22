@@ -1,4 +1,5 @@
-﻿using EyePatch.Core.Util;
+﻿using EyePatch.Blog.Documents;
+using EyePatch.Core.Util;
 using NKnockoutUI.ContextMenu;
 using NKnockoutUI.Tree;
 
@@ -8,7 +9,6 @@ namespace EyePatch.Blog.Models
     {
         public DraftsTree()
         {
-
             Id = EyePatchApplication.SiteID + "EyePatchBlogDraftsTree";
             Remember = true;
             Defaults = new DraftsTreeDefaults();
@@ -18,10 +18,12 @@ namespace EyePatch.Blog.Models
             ContextMenu.ContextMenus.Add(new PostContextMenu());
         }
 
-        public void AddPost(Entity.Post post)
+        public void AddPost(Post post)
         {
             Children.Add(new PostNode(post));
         }
+
+        #region Nested type: DraftsTreeDefaults
 
         private class DraftsTreeDefaults : Behavior
         {
@@ -35,9 +37,12 @@ namespace EyePatch.Blog.Models
             {
                 get
                 {
-                    return new Behavior { IsDraggable = false, IsDropTarget = false, CanAddChildren = false, Name = "New Post" };
+                    return new Behavior
+                               {IsDraggable = false, IsDropTarget = false, CanAddChildren = false, Name = "New Post"};
                 }
             }
         }
+
+        #endregion
     }
 }

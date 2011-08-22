@@ -16,7 +16,8 @@ namespace EyePatch.Core.Models.Forms
 
         [Required(ErrorMessage = "A password must be supplied")]
         [Display(Name = "Administrator Password", Description = "The password you will use to login to EyePatch")]
-        [StringLength(25, MinimumLength = 6, ErrorMessage = "The password must be between 6 and 25 characters in length.")]
+        [StringLength(25, MinimumLength = 6,
+            ErrorMessage = "The password must be between 6 and 25 characters in length.")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 

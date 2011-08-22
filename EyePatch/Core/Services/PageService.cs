@@ -1,58 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Linq;
 using System.Linq;
 using System.Web;
-using EyePatch.Core.Entity;
+using EyePatch.Core.Documents;
+using EyePatch.Core.Documents.Children;
+using EyePatch.Core.Documents.Extensions;
 using EyePatch.Core.Models.Forms;
 using EyePatch.Core.Mvc.Resources;
-using System.Collections.Concurrent;
 using EyePatch.Core.Mvc.Sitemap;
 using EyePatch.Core.Util;
 using EyePatch.Core.Util.Extensions;
+using Raven.Client;
+using Raven.Client.Linq;
 
 namespace EyePatch.Core.Services
 {
     public class PageService : ServiceBase, IPageService
     {
-        private static object padlock = new object();
-        private const string pageListKey = "AllEyepatchPages";
         private const string outputCacheKey = "AllEyepatchPagesOutputCache";
+        protected ICacheProvider cacheProvider;
 
         protected IFolderService folderService;
         protected ITemplateService templateService;
-        protected ICacheProvider cacheProvider;
 
-        public PageService(EyePatchDataContext context, IFolderService folderService, ITemplateService templateService, ICacheProvider cacheProvider)
-            : base(context)
+        public PageService(IDocumentSession session, IFolderService folderService, ITemplateService templateService,
+                           ICacheProvider cacheProvider)
+            : base(session)
         {
             this.folderService = folderService;
             this.templateService = templateService;
             this.cacheProvider = cacheProvider;
-
-            if (db.LoadOptions == null)
-            {
-                var dlo = new DataLoadOptions();
-                dlo.LoadWith<Page>(p => p.Template);
-                dlo.LoadWith<Page>(p => p.ContentAreas);
-                db.LoadOptions = dlo;
-            }
         }
 
         #region IPageService Members
 
-        public void InvalidatePageCache()
-        {
-            lock (PadLock)
-            {
-                cacheProvider.Remove(pageListKey);
-            }
-        }
-
-        public ResourceCollection Js(int id)
+        public ResourceCollection Js(string id)
         {
             var page = Load(id);
-            var distinctWidgets = page.ContentAreas.SelectMany(w => w.WidgetInstances).GroupBy(w => w.WidgetID).Select(g => g.First().GetInstance());
+            var distinctWidgets =
+                page.ContentAreas.SelectMany(c => c.Widgets).GroupBy(w => w.Type).Select(g => g.First().GetInstance());
             var result = new ResourceCollection();
             foreach (var widget in distinctWidgets.Where(w => w.Js != null))
             {
@@ -61,10 +47,11 @@ namespace EyePatch.Core.Services
             return result;
         }
 
-        public ResourceCollection Css(int id)
+        public ResourceCollection Css(string id)
         {
             var page = Load(id);
-            var distinctWidgets = page.ContentAreas.SelectMany(w => w.WidgetInstances).GroupBy(w => w.WidgetID).Select(g => g.First().GetInstance());
+            var distinctWidgets =
+                page.ContentAreas.SelectMany(w => w.Widgets).GroupBy(w => w.Type).Select(g => g.First().GetInstance());
             var result = new ResourceCollection();
             foreach (var widget in distinctWidgets.Where(w => w.Css != null))
             {
@@ -73,10 +60,11 @@ namespace EyePatch.Core.Services
             return result;
         }
 
-        public ResourceCollection AdminJs(int id)
+        public ResourceCollection AdminJs(string id)
         {
             var page = Load(id);
-            var distinctWidgets = page.ContentAreas.SelectMany(w => w.WidgetInstances).GroupBy(w => w.WidgetID).Select(g => g.First().GetInstance());
+            var distinctWidgets =
+                page.ContentAreas.SelectMany(w => w.Widgets).GroupBy(w => w.Type).Select(g => g.First().GetInstance());
             var result = new ResourceCollection();
             foreach (var widget in distinctWidgets.Where(w => w.AdminJs != null))
             {
@@ -85,10 +73,11 @@ namespace EyePatch.Core.Services
             return result;
         }
 
-        public ResourceCollection AdminCss(int id)
+        public ResourceCollection AdminCss(string id)
         {
             var page = Load(id);
-            var distinctWidgets = page.ContentAreas.SelectMany(w => w.WidgetInstances).GroupBy(w => w.WidgetID).Select(g => g.First().GetInstance());
+            var distinctWidgets =
+                page.ContentAreas.SelectMany(w => w.Widgets).GroupBy(w => w.Type).Select(g => g.First().GetInstance());
             var result = new ResourceCollection();
             foreach (var widget in distinctWidgets.Where(w => w.AdminCss != null))
             {
@@ -97,18 +86,19 @@ namespace EyePatch.Core.Services
             return result;
         }
 
-        public void ChangeTemplate(int pageID, int templateId)
+        protected void ChangeTemplate(Page page, string templateId)
         {
-            var page = Load(pageID);
             var template = templateService.Load(templateId);
 
-            db.WidgetInstances.DeleteAllOnSubmit(page.ContentAreas.SelectMany(c => c.WidgetInstances));
-            db.ContentAreas.DeleteAllOnSubmit(page.ContentAreas);
-
-            InvalidatePageCache();
+            page.TemplateId = template.Id;
+            page.ContentAreas.Clear();
             ClearOutputCacheDependency(HttpContext.Current);
+        }
 
-            page.Template = template;
+        public void ChangeTemplate(string pageID, string templateId)
+        {
+            var page = Load(pageID);
+            ChangeTemplate(page, templateId);
         }
 
         public void AddOutputCacheDependency(HttpContext context)
@@ -125,13 +115,33 @@ namespace EyePatch.Core.Services
             context.Cache.Remove(outputCacheKey);
         }
 
+        public IEnumerable<Page> VisiblePages()
+        {
+            return
+                session.Query<Page>().Where(p => !p.IsDynamic && !p.IsHidden && p.IsLive).OrderByDescending(
+                    p => p.Priority).Take(1024);
+        }
+
+        public void Hide(Page page)
+        {
+            page.IsHidden = true;
+            session.SaveChanges();
+        }
+
         public int Count
         {
             get
             {
                 try
                 {
-                    return All().Count;
+                    RavenQueryStatistics stats;
+                    var results = session.Query<Page>()
+                        .Customize(x => x.WaitForNonStaleResultsAsOfNow())
+                        .Statistics(out stats)
+                        .Where(x => x.Url != null && x.Url != string.Empty && !x.IsHidden)
+                        .ToArray();
+
+                    return stats.TotalResults;
                 }
                 catch
                 {
@@ -140,43 +150,24 @@ namespace EyePatch.Core.Services
             }
         }
 
-        public ConcurrentDictionary<string, Page> All()
-        {
-            var pages = cacheProvider.Get<ConcurrentDictionary<string, Page>>(pageListKey);
-            if (pages == null)
-            {
-                lock (padlock)
-                {
-                    pages = cacheProvider.Get<ConcurrentDictionary<string, Page>>(pageListKey);
-                    if (pages == null)
-                    {
-                        pages = new ConcurrentDictionary<string, Page>(db.Pages.Where(p => p.Url != null && p.Url.Trim() != string.Empty && !p.IsHidden).Select(p => new KeyValuePair<string, Page>(p.Url, p)));
-                        cacheProvider.Add(pageListKey, pages);
-                    }
-                }
-            }
-            return pages;
-        }
-
         public Page Match(string url)
         {
-            Page result;
-            All().TryGetValue(url.NormalizeUrl(), out result);
-            return result;
+            return session.Query<Page>("PagesByUrl").Customize(x => x.WaitForNonStaleResultsAsOfNow()).Where(p => p.Url == url.NormalizeUrl()).SingleOrDefault();
         }
 
-        public Page Load(int id)
+        public Page Load(string id)
         {
-            Page page = db.Pages.SingleOrDefault(p => p.ID == id);
+            var page = session.Load<Page>(id);
             if (page == null)
                 throw new ApplicationException("Page does not exist");
 
             return page;
         }
 
-        public IEnumerable<Page> LoadFromFolder(Folder folder)
+        public IEnumerable<PageItem> LoadFromFolder(string folderID)
         {
-            return All().Where(p => p.Value.FolderID == folder.ID && p.Value.IsLive && p.Value.IsInMenu).Select(p => p.Value).OrderBy(p => p.MenuOrder);
+            var folder = folderService.FindFolder(folderID);
+            return folder.Pages.Where(p => p.IsLive && p.IsInMenu).OrderBy(p => p.MenuOrder);
         }
 
         public Page Homepage()
@@ -184,37 +175,50 @@ namespace EyePatch.Core.Services
             return Match("/");
         }
 
-        public Page Create(string name, string title, string url, bool isLive)
+        public Page Create(string name, string title, string url, bool isLive, bool hidden)
         {
-            return Create(name, title, url, isLive, templateService.DefaultTemplate.ID, 1);
+            return Create(name, title, url, folderService.RootFolder.Id, isLive, hidden);
         }
 
-        public Page Create(string name, string title, string url, int folderID, bool isLive)
+        public Page Create(string name, string title, string url, string folderId, bool isLive, bool hidden)
         {
-            return Create(name, title, url, isLive, templateService.DefaultTemplate.ID, folderID);
+            return Create(name, title, url, folderId, isLive, templateService.DefaultTemplate.Id, hidden);
         }
 
-        public Page Create(string name, string title, string url, bool isLive, int templateID, int folderID)
+        public Page Create(string name, string title, string url, string folderId, bool isLive, string templateId, bool hidden)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
-            Folder folder = folderService.Load(folderID);
-            Template template = templateService.Load(templateID);
+
+            var template = templateService.Load(templateId);
+            var folder = folderService.FindFolder(folderId);
+
+            if (folder == null)
+                throw new ApplicationException("folder does not exist");
 
             var page = new Page
-                           {
-                               Name = name,
-                               Title = title,
-                               Url = url.NormalizeUrl(),
-                               IsLive = isLive,
-                               Template = template,
-                               Folder = folder,
-                               // these should be configurable
-                               Priority = url == "/" ? 1 : 0.8, 
-                               ChangeFrequency = url == "/" ? ChangeFrequency.Daily : ChangeFrequency.Monthly
-                           };
-            db.Pages.InsertOnSubmit(page);
-            db.SubmitChanges();
-            InvalidatePageCache();
+            {
+                Name = name,
+                Title = title,
+                Url = url.NormalizeUrl(),
+                IsLive = isLive,
+                TemplateId = template.Id,
+                // these should be configurable
+                Priority = url == "/" ? 1 : 0.8,
+                ChangeFrequency = url == "/" ? ChangeFrequency.Daily : ChangeFrequency.Monthly,
+                AnalyticsKey = template.AnalyticsKey,
+                Created = DateTime.UtcNow,
+                IsHidden = hidden
+            };
+
+            session.Store(page);
+            session.SaveChanges();
+
+            // update folder with page id
+            if (!hidden)
+                folder.Pages.Add(new PageItem { Id = page.Id, Name = page.Name, Url = page.Url, IsHomePage = page.IsHomePage() });
+            
+            session.SaveChanges();
+
             ClearOutputCacheDependency(HttpContext.Current);
             return page;
         }
@@ -223,39 +227,41 @@ namespace EyePatch.Core.Services
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
 
-            
-            var contentArea = new ContentArea { Name = name };
+            var contentArea = new ContentArea {Name = name};
             page.ContentAreas.Add(contentArea);
-            db.SubmitChanges();
+            session.SaveChanges();
             return contentArea;
-        }
-
-        public void DeleteContentArea(ContentArea contentArea)
-        {
-            db.WidgetInstances.DeleteAllOnSubmit(contentArea.WidgetInstances);
-            db.ContentAreas.DeleteOnSubmit(contentArea);
-            db.SubmitChanges();
         }
 
         public void Update(PageForm form)
         {
             var existingPage = Match(form.Url);
-            if (existingPage != null && existingPage.ID != form.Id)
+            if (existingPage != null && existingPage.Id != form.Id)
                 throw new ApplicationException("A page with this url already exists");
-
+            
             var page = Load(form.Id);
-            page.Title = form.Title;
 
-            if (page.Url == "/" && page.Url != form.Url.NormalizeUrl() )
+            PageItem pageItem;
+            folderService.FindParentFolderOfPage(page.Id, out pageItem);
+
+            if (page.Url == "/" && page.Url != form.Url.NormalizeUrl())
                 throw new ApplicationException("Can't change the url of the homepage");
 
-            page.Url = form.Url == null ? page.Url : form.Url.NormalizeUrl();
-            page.Template = templateService.Load(form.TemplateID);
-            page.IsLive = form.IsLive;
-            page.IsInMenu = form.IsInMenu;
-            page.MenuOrder = form.MenuOrder;
-            db.SubmitChanges();
-            InvalidatePageCache();
+
+            page.Title = pageItem.Title = form.Title;
+            page.Url = pageItem.Url = form.Url == null ? null : form.Url.NormalizeUrl();
+
+            if (page.TemplateId != form.TemplateID)
+            {
+                ChangeTemplate(page, form.TemplateID);
+            }
+
+            page.IsLive = pageItem.IsLive = form.IsLive;
+            page.IsInMenu = pageItem.IsInMenu = form.IsInMenu;
+            page.MenuOrder = pageItem.MenuOrder =form.MenuOrder;
+            page.LastModified = DateTime.UtcNow;
+
+            session.SaveChanges();
             ClearOutputCacheDependency(HttpContext.Current);
         }
 
@@ -263,16 +269,19 @@ namespace EyePatch.Core.Services
         {
             var page = Load(form.Id);
 
-            page.Description = form.Description;
+            PageItem pageItem;
+            folderService.FindParentFolderOfPage(page.Id, out pageItem);
+
+            page.Description = pageItem.Description = form.Description;
             page.Keywords = form.Keywords;
             page.Language = form.Language;
             page.Charset = form.Charset;
             page.Author = form.Author;
             page.Copyright = form.Copyright;
             page.Robots = form.Robots;
+            page.LastModified = DateTime.UtcNow;
 
-            db.SubmitChanges();
-            InvalidatePageCache();
+            session.SaveChanges();
             ClearOutputCacheDependency(HttpContext.Current);
         }
 
@@ -291,41 +300,49 @@ namespace EyePatch.Core.Services
             page.OgPostcode = form.Postcode;
             page.OgLongitude = form.Longitude;
             page.OgLatitude = form.Latitude;
+            page.LastModified = DateTime.UtcNow;
 
-            db.SubmitChanges();
-            InvalidatePageCache();
+            session.SaveChanges();
             ClearOutputCacheDependency(HttpContext.Current);
         }
 
-        public void Update()
+        public void Rename(string id, string name)
         {
-            db.SubmitChanges();
-        }
-
-        public void Rename(int id, string name)
-        {
-            Page page = Load(id);
+            var page = Load(id);
             page.Name = name;
-            db.SubmitChanges();
+
+            PageItem pageItem = null;
+            folderService.FindParentFolderOfPage(page.Id, out pageItem);
+
+            if (pageItem != null)
+            {
+                pageItem.Name = name;
+            } 
+            page.LastModified = DateTime.UtcNow;
+
+            session.SaveChanges();
         }
 
-        public void Move(int id, int parent)
+        public void Move(string id, string parent)
         {
-            Page page = Load(id);
-            Folder newParent = folderService.Load(parent);
+            PageItem pageItem;
+            var oldParent = folderService.FindParentFolderOfPage(id, out pageItem);
+            var newParent = folderService.FindFolder(parent);
 
-            page.Folder = newParent;
-            db.SubmitChanges();
+            oldParent.Pages.Remove(pageItem);
+            newParent.Pages.Add(pageItem);
+
+            session.SaveChanges();
         }
 
-        public void Delete(int id)
+        public void Delete(string id)
         {
-            Page page = Load(id);
-            db.WidgetInstances.DeleteAllOnSubmit(page.ContentAreas.SelectMany(c => c.WidgetInstances));
-            db.ContentAreas.DeleteAllOnSubmit(page.ContentAreas);
-            db.Pages.DeleteOnSubmit(page);
-            db.SubmitChanges();
-            InvalidatePageCache();
+            var page = session.Load<Page>(id);
+            if (page == null)
+                return; // nothing to do
+
+            session.Delete(page);
+            session.SaveChanges();
             ClearOutputCacheDependency(HttpContext.Current);
         }
 

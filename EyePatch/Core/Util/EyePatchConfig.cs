@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EyePatch.Core.Util
+﻿namespace EyePatch.Core.Util
 {
     public static class EyePatchConfig
     {

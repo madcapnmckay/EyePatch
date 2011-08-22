@@ -2,7 +2,7 @@
     Layout = null;
 }
 var ep = {};
-ep.pageId = @ViewBag.PageId;
+ep.pageId = '@ViewBag.PageId';
 ep.utils = {};
 jQuery.extend({
     getScript: function (url, callback) {
@@ -64,13 +64,46 @@ jQuery.extend({
 
         // wait for scripts to be loaded, skip to eyepatch-admin.js
     };
+    ep.showLoader = function(onFinish) {
+        var outer = $('<div id="eyepatchLoader"></div>').css({ 
+                                border : '1px solid Black', 
+                                borderRadius: '4px', 
+                                backgroundColor: '#3A8AC7',
+                                backgroundImage: '-moz-linear-gradient(center top , #9AC2DE, #3A8AC7)',
+                                boxShadow: '0 0 5px Black',
+                                display: 'inline-block',
+                                position: 'fixed',
+                                bottom: '-65px',
+                                right: '30px',
+                                fontFamily: '"Segoe UI", Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans serif'
+                            });
+
+        var inner = $('<div></div>').css({
+                                border: '1px solid #EFF6FC',
+                                borderRadius: '4px',
+                                color: 'White',
+                                padding: '15px 30px',
+                                fontWeight: 'bold',
+                                fontSize: '20px'
+                            }).text('Loading...');
+        outer.append(inner);
+        var body = $('body');
+        outer.appendTo(body).animate({ bottom: 0 }, 300, function() { onFinish(); });
+    };
+    ep.hideLoader = function() {
+        $('#eyepatchLoader').animate({ bottom: -65 }, 300, function() { $(this).remove(); });
+    };
 })();
 
 // fetch the model data from the server
-$.ajax({
-    dataType: 'json',
-    type: 'POST',
-    data: { pageId : ep.pageId },
-    url: '/admin/data',
-    success: ep.receiveData
+$(function() {
+    ep.showLoader(function() {
+        $.ajax({
+            dataType: 'json',
+            type: 'POST',
+            data: { pageId : ep.pageId },
+            url: '/admin/data',
+            success: ep.receiveData
+        });
+    });
 });

@@ -1,5 +1,4 @@
-﻿using EyePatch.Blog.Entity;
-using StructureMap.Configuration.DSL;
+﻿using StructureMap.Configuration.DSL;
 
 namespace EyePatch.Blog
 {
@@ -8,7 +7,6 @@ namespace EyePatch.Blog
         public BlogRegistry()
         {
             For<IBlogManager>().Use<BlogManager>();
-            For<EyePatchBlogDataContext>().HybridHttpOrThreadLocalScoped().Use(() => new EyePatchBlogDataContext());
         }
     }
 }

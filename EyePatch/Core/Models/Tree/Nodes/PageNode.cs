@@ -1,4 +1,5 @@
-﻿using NKnockoutUI.Tree;
+﻿using EyePatch.Core.Documents.Children;
+using NKnockoutUI.Tree;
 
 namespace EyePatch.Core.Models.Tree.Nodes
 {
@@ -9,15 +10,16 @@ namespace EyePatch.Core.Models.Tree.Nodes
             CssClass = "page";
         }
 
-        public PageNode(Entity.Page page) : this()
+        public PageNode(PageItem page) : this()
         {
-            Id = page.ID.ToString();
-            if (page.Url == "/") {
+            Id = page.Id;
+            if (page.IsHomePage)
+            {
                 CssClass = "homepage";
                 Type = "page";
             }
             Name = page.Name;
-            
+
             // meta nodes
             Children.Add(new SearchEngineMetaNode(page));
             Children.Add(new FacebookMetaNode(page));

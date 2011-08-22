@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using EyePatch.Blog.Models;
 using EyePatch.Blog.Models.Forms;
 using EyePatch.Core;
@@ -19,36 +18,39 @@ namespace EyePatch.Blog.Controllers
         }
 
         [HttpPost]
-        public JsonResult Remove(int id)
+        public JsonResult Remove(string id)
         {
             blogManager.Delete(id);
-            return JsonNet(new { success = true });
+            return JsonNet(new {success = true});
         }
 
         [HttpPost]
-        public JsonResult Info(int id)
+        public JsonResult Info(string id)
         {
-            return JsonNet(new { success = true, data = blogManager.Load(id).ToForm() });
+            return JsonNet(new {success = true, data = blogManager.Load(id).ToForm()});
         }
 
         [HttpPost]
-        public JsonResult Navigate(int id)
+        public JsonResult Navigate(string id)
         {
             var post = blogManager.Load(id);
-            return JsonNet(new { success = true, url = post.Url });
+            if (string.IsNullOrWhiteSpace(post.Url))
+                return JsonNet(new {success = false, message = "The post does not have a url yet."});
+
+            return JsonNet(new {success = true, url = post.Url});
         }
 
         [HttpPost]
         public JsonResult Create(string name)
         {
-            return JsonNet(new { success = true, data = new PostNode(blogManager.Create(name)) });
+            return JsonNet(new {success = true, data = new PostNode(blogManager.Create(name))});
         }
 
         [HttpPost]
-        public JsonResult Publish(int id)
+        public JsonResult Publish(string id)
         {
             blogManager.Publish(id);
-            return JsonNet(new { success = true });
+            return JsonNet(new {success = true});
         }
 
         [HttpPost]
@@ -60,29 +62,29 @@ namespace EyePatch.Blog.Controllers
                 if (form.Published)
                     blogManager.Publish(form.Id);
 
-                return JsonNet(new {success = true, published = form.Published });
+                return JsonNet(new {success = true, published = form.Published});
             }
-            return JsonNet(new { success = false });
+            return JsonNet(new {success = false});
+        }
+
+        public JsonResult Body(string postId, string html)
+        {
+            blogManager.UpdateBody(postId, html);
+            return Json(new { success = true });
         }
 
         [HttpPost]
-        public JsonResult Rename(int id, string name)
+        public JsonResult Rename(string id, string name)
         {
             blogManager.Rename(id, name);
-            return JsonNet(new { success = true });
+            return JsonNet(new {success = true});
         }
 
         [HttpPost]
-        public JsonResult Settings(int listPage, int template, string disqus)
+        public JsonResult Settings(string listPage, string template, string disqus)
         {
             blogManager.UpdateSettings(listPage, template, disqus);
-            return JsonNet(new { success = true });
-        }
-
-        [HttpPost]
-        public JsonResult Tags(string q)
-        {
-            return JsonNet(blogManager.TagContaining(q).Select(t => new { value = t.Name }));
+            return JsonNet(new {success = true});
         }
     }
 }

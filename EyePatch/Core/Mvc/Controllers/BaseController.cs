@@ -33,7 +33,7 @@ namespace EyePatch.Core.Mvc.Controllers
             if (filterContext.Result is JsonNetResult)
             {
 #if DEBUG
-                ((JsonNetResult)filterContext.Result).Formatting = Formatting.Indented;
+                ((JsonNetResult) filterContext.Result).Formatting = Formatting.Indented;
 #endif
             }
         }

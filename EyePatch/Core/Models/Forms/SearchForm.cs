@@ -6,7 +6,7 @@ namespace EyePatch.Core.Models.Forms
 {
     public interface ISearchForm
     {
-        int Id { get; set; }
+        string Id { get; set; }
         string Description { get; set; }
         string Keywords { get; set; }
         int? Language { get; set; }
@@ -18,23 +18,8 @@ namespace EyePatch.Core.Models.Forms
 
     public class SearchForm : ISearchForm
     {
-        public int Id { get; set; }
-
-        public string Description { get; set; }
-
-        public string Keywords { get; set; }
-
-        public int? Language { get; set; }
-
-        public string Charset { get; set; }
-
-        public string Author { get; set; }
-
-        public string Copyright { get; set; }
-
-        public string Robots { get; set; }
-
         private static IEnumerable<KeyValuePair<int, string>> languages;
+        private static IList<KeyValuePair<string, string>> charsets;
 
         public IEnumerable<KeyValuePair<int, string>> Languages
         {
@@ -43,13 +28,13 @@ namespace EyePatch.Core.Models.Forms
                 if (languages == null)
                 {
                     var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
-                    languages = cultures.Select(c => new KeyValuePair<int, string>(c.LCID, c.DisplayName)).OrderBy(l => l.Value).ToList();
+                    languages =
+                        cultures.Select(c => new KeyValuePair<int, string>(c.LCID, c.DisplayName)).OrderBy(l => l.Value)
+                            .ToList();
                 }
                 return languages;
             }
         }
-
-        private static IList<KeyValuePair<string, string>> charsets;
 
         public IEnumerable<KeyValuePair<string, string>> Charsets
         {
@@ -72,11 +57,32 @@ namespace EyePatch.Core.Models.Forms
                     charsets.Add(new KeyValuePair<string, string>("ISO-8859-10", "ISO-8859-10 (Latin 6 Lappish, Nordic)"));
                     charsets.Add(new KeyValuePair<string, string>("ISO-8859-15", "ISO-8859-15 (Latin 9 (aka Latin 0))"));
                     charsets.Add(new KeyValuePair<string, string>("ISO-2022-JP", "ISO-2022-JP (Latin/Japanese part 1)"));
-                    charsets.Add(new KeyValuePair<string, string>("ISO-2022-JP-2", "ISO-2022-JP-2 (Latin/Japanese part 2)"));
+                    charsets.Add(new KeyValuePair<string, string>("ISO-2022-JP-2",
+                                                                  "ISO-2022-JP-2 (Latin/Japanese part 2)"));
                     charsets.Add(new KeyValuePair<string, string>("ISO-2022-KR", "ISO-2022-KR (Latin/Korean part 1)"));
                 }
                 return charsets;
             }
         }
+
+        #region ISearchForm Members
+
+        public string Id { get; set; }
+
+        public string Description { get; set; }
+
+        public string Keywords { get; set; }
+
+        public int? Language { get; set; }
+
+        public string Charset { get; set; }
+
+        public string Author { get; set; }
+
+        public string Copyright { get; set; }
+
+        public string Robots { get; set; }
+
+        #endregion
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using EyePatch.Core.Plugins;
+using EyePatch.Core.Widgets;
 using NKnockoutUI.Tree;
+using StructureMap;
 
 namespace EyePatch.Core.Models.Tree.Nodes
 {
@@ -11,22 +13,19 @@ namespace EyePatch.Core.Models.Tree.Nodes
         }
 
 
-        public WidgetGroupNode(Entity.Plugin plugin)
+        public WidgetGroupNode(IEyePatchPlugin plugin)
             : this()
         {
-            var entity = plugin;
-            Id = entity.ID.ToString();
-            Name = entity.Name;
+            Id = plugin.Name;
+            Name = plugin.Name;
 
-            entity.Widgets.ToList().ForEach(AddWidget);
+            foreach (var widget in plugin.Widgets)
+            {
+                AddWidget(ObjectFactory.GetInstance(widget) as IWidget);
+            }
         }
 
-        private void AddGroup(Entity.Plugin plugin)
-        {
-            Children.Add(new WidgetGroupNode(plugin));
-        }
-
-        public void AddWidget(Entity.Widget widget)
+        public void AddWidget(IWidget widget)
         {
             Children.Add(new WidgetNode(widget));
         }

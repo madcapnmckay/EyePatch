@@ -1,4 +1,5 @@
-﻿using NKnockoutUI.Tree;
+﻿using EyePatch.Core.Widgets;
+using NKnockoutUI.Tree;
 
 namespace EyePatch.Core.Models.Tree.Nodes
 {
@@ -9,10 +10,10 @@ namespace EyePatch.Core.Models.Tree.Nodes
             CssClass = "widget";
         }
 
-        public WidgetNode(Entity.Widget widget)
+        public WidgetNode(IWidget widget)
             : this()
         {
-            Id = widget.ID.ToString();
+            Id = widget.GetType().GetHashCode().ToString();
             Name = widget.Name;
         }
     }

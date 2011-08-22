@@ -1,4 +1,5 @@
-﻿using EyePatch.Core.Models.Tree.Nodes;
+﻿using EyePatch.Core.Documents;
+using EyePatch.Core.Models.Tree.Nodes;
 using EyePatch.Core.Util;
 using NKnockoutUI.Tree;
 
@@ -14,20 +15,21 @@ namespace EyePatch.Core.Models.Tree
             Defaults = new TemplateTreeDefaults();
         }
 
-        public void AddTemplate(Entity.Template template)
+        public void AddTemplate(Template template)
         {
             Children.Add(new TemplateNode(template));
         }
+
+        #region Nested type: TemplateTreeDefaults
 
         private class TemplateTreeDefaults
         {
             public Behavior Template
             {
-                get
-                {
-                    return new Behavior { IsDraggable = false, IsDropTarget = false, CanAddChildren = false };
-                }
+                get { return new Behavior {IsDraggable = false, IsDropTarget = false, CanAddChildren = false}; }
             }
         }
+
+        #endregion
     }
 }

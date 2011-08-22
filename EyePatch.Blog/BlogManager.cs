@@ -1,87 +1,73 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using EyePatch.Blog.Entity;
+using System.Web;
+using EyePatch.Blog.Documents;
 using EyePatch.Blog.Models;
 using EyePatch.Blog.Models.Forms;
 using EyePatch.Blog.Models.Widgets;
-using EyePatch.Core.Entity;
+using EyePatch.Core;
+using EyePatch.Core.Documents;
 using EyePatch.Core.Services;
-using EyePatch.Core.Util;
 using EyePatch.Core.Util.Extensions;
+using Raven.Client;
 
 namespace EyePatch.Blog
 {
     public class BlogManager : ServiceBase, IBlogManager
     {
-        private static object padlock = new object();
-        protected readonly EyePatchBlogDataContext blogDb;
-        protected readonly IPageService pageService;
-        protected readonly ICacheProvider cacheProvider;
-        private const string postListKey = "AllEyepatchBlogPosts";
-        private const string settingsKey = "EyePatchBlogSettings";
+        protected static object padLock = new object();
+        protected Documents.Blog settings;
+        protected readonly IContentManager contentManager;
 
-        public BlogManager(EyePatchDataContext context, EyePatchBlogDataContext blogContext, IPageService pageService, ICacheProvider cacheProvider)
-            : base(context)
+        public BlogManager(IDocumentSession session, IContentManager contentManager)
+            : base(session)
         {
-            blogDb = blogContext;
-            this.pageService = pageService;
-            this.cacheProvider = cacheProvider;
+            this.contentManager = contentManager;
         }
 
-        public void InvalidatePostCache()
+        #region IBlogManager Members
+
+        public Documents.Blog Settings
         {
-            lock (PadLock)
-            {
-                cacheProvider.Remove(postListKey);
+            get { 
+                var settings = session.Query<Documents.Blog>().Customize(x => x.WaitForNonStaleResultsAsOfLastWrite()).FirstOrDefault();
+                if (settings == null)
+                {
+                    lock (padLock)
+                    {
+                        settings = session.Query<Documents.Blog>().Customize(x => x.WaitForNonStaleResultsAsOfLastWrite()).FirstOrDefault();
+                        if (settings == null)
+                        {
+                            // create the blog post page
+                            var postTemplate = contentManager.Page.Create("BlogPostTemplate", "EyePatch Blog Template",
+                                                                          "/blog/template", false);
+
+                            // store for later
+                            settings = new Documents.Blog();
+                            settings.PostPageId = postTemplate.Id;
+                            session.Store(settings);
+                            session.SaveChanges();
+                        }
+                    }
+                }
+                return settings;
             }
         }
 
-        public Page Template
+        public Page PostTemplate
         {
-            get
-            {
-                return pageService.Load(Settings.PostPageID);
-            }
+            get { return contentManager.Page.Load(Settings.PostPageId); }
         }
 
         public Page PostList
         {
-            get
-            {
-                return pageService.Load(Settings.ListPageID);
-            }
+            get { return contentManager.Page.Load(Settings.ListPageId); }
         }
 
-        public BlogInfo Settings
+        public IEnumerable<Post> All()
         {
-            get
-            {
-                if (cacheProvider.Get<BlogInfo>(settingsKey) == null)
-                {
-                    cacheProvider.Add(settingsKey, blogDb.BlogInfos.First());
-                }
-                return cacheProvider.Get<BlogInfo>(settingsKey);
-            }
-        }
-
-        public ConcurrentDictionary<string, Post> All()
-        {
-            var posts = cacheProvider.Get<ConcurrentDictionary<string, Post>>(postListKey);
-            if (posts == null)
-            {
-                lock (padlock)
-                {
-                    posts = cacheProvider.Get<ConcurrentDictionary<string, Post>>(postListKey);
-                    if (posts == null)
-                    {
-                        posts = new ConcurrentDictionary<string, Post>(blogDb.Posts.Where(p => p.Url != null && p.Url.Trim() != string.Empty).Select(p => new KeyValuePair<string, Post>(p.Url, p)));
-                        cacheProvider.Add(postListKey, posts);
-                    }
-                }
-            }
-            return posts;
+            return session.Query<Post>().Where(p => !string.IsNullOrWhiteSpace(p.Url)).Take(1024);
         }
 
         public BlogWindow BlogPanel()
@@ -89,7 +75,8 @@ namespace EyePatch.Blog
             var window = new BlogWindow();
             var blogPanelContents = new BlogWindowContents();
 
-            blogPanelContents.Pages = pageService.All().Select(p => new KeyValuePair<int, string>(p.Value.ID, p.Value.Name));
+            blogPanelContents.Pages =
+                contentManager.Page.VisiblePages().Select(p => new KeyValuePair<string, string>(p.Id, p.Name));
             blogPanelContents.Drafts = Drafts().ToDraftsTree();
             blogPanelContents.Published = Published().ToPublishedTree();
 
@@ -104,59 +91,45 @@ namespace EyePatch.Blog
 
         public IEnumerable<Post> Drafts()
         {
-            return blogDb.Posts.Where(p => p.Published == null);
+            return session.Query<Post>().Where(p => p.Published == null);
         }
 
         public IEnumerable<Post> Published()
         {
-            return blogDb.Posts.Where(p => p.Published <= DateTime.UtcNow).OrderByDescending(p => p.Published);
+            return session.Query<Post>().Where(p => p.Published <= DateTime.UtcNow).OrderByDescending(p => p.Published);
         }
 
-        public IEnumerable<Tag> TagContaining(string query)
+        public Post Load(string postId)
         {
-            return blogDb.Tags.Where(t => t.Name.Contains(query));
-        }
-
-        public Post Load(int id)
-        {
-            Post post = blogDb.Posts.SingleOrDefault(p => p.ID == id);
+            var post = session.Load<Post>(postId);
             if (post == null)
                 throw new ApplicationException("Post does not exist");
 
             return post;
         }
 
-        public Post Match(string path)
+        public Post Match(string url)
         {
-            Post result;
-            var all = All().ToList();
-            var p = path.NormalizeUrl();
-
-            All().TryGetValue(path.NormalizeUrl(), out result);
-            return result;
+            var u = url.NormalizeUrl();
+            return session.Query<Post>("PostsByUrl").Where(p => p.Url == url.NormalizeUrl()).SingleOrDefault();
         }
 
         public Post Create(string name)
         {
-            var post = new Post();
-            post.Title = string.Empty;
-            post.Url = string.Empty;
-            post.Body = Entity.Post.DefaultBody;
-            post.Name = name;
-            blogDb.Posts.InsertOnSubmit(post);
-            blogDb.SubmitChanges();
-            InvalidatePostCache();
+            var post = new Post {Title = string.Empty, Url = string.Empty, Name = name, Created = DateTime.UtcNow };
 
+            session.Store(post);
+            session.SaveChanges();
             return post;
         }
 
         public void Update(PostForm form)
         {
             var existingPost = Match(form.Url);
-            if (existingPost != null && existingPost.ID != form.Id)
+            if (existingPost != null && existingPost.Id != form.Id)
                 throw new ApplicationException("A post with this url already exists");
 
-            var existingPage = pageService.Match(form.Url);
+            var existingPage = contentManager.Page.Match(form.Url);
             if (existingPage != null)
                 throw new ApplicationException("A page with this url already exists");
 
@@ -164,100 +137,86 @@ namespace EyePatch.Blog
             post.Title = form.Title;
             post.Url = form.Url == null ? post.Url : form.Url.NormalizeUrl();
 
-            // parse tags
+            post.Tags.Clear();
+
             if (!string.IsNullOrWhiteSpace(form.Tags))
             {
-                var tagNames = form.Tags.Split(',').Select(t => t.Trim().ToLowerInvariant());
-                foreach (var newTag in tagNames.Except(post.PostTags.Select(t => t.Tag.Name)))
-                {
-                    var name = newTag;
-                    var tag = blogDb.Tags.SingleOrDefault(t => t.Name == name);
-                    if (tag == null)
-                    {
-                        tag = new Tag { Name = name };
-                        blogDb.Tags.InsertOnSubmit(tag);
-                        post.PostTags.Add(new PostTag { Tag = tag });
-                    }
-                }
+                post.Tags.AddRange(
+                    form.Tags.Split(',').Where(t => t.Trim() != "").Select(
+                        t => new Tag {Value = t.Trim().ToLowerInvariant()}));
             }
 
-            blogDb.SubmitChanges();
-            InvalidatePostCache();
+            post.LastModified = DateTime.UtcNow;
+
+            session.SaveChanges();
+
+            contentManager.Page.ClearOutputCacheDependency(HttpContext.Current);
         }
 
-        public void Rename(int id, string name)
-        {
-            Post post = Load(id);
-            post.Name = name;
-            blogDb.SubmitChanges();
-        }
-
-        public void Delete(int id)
-        {
-            Post post = Load(id);
-            blogDb.PostTags.DeleteAllOnSubmit(post.PostTags);
-            blogDb.Posts.DeleteOnSubmit(post);
-            blogDb.SubmitChanges();
-            InvalidatePostCache();
-        }
-
-        public void AssignPostTemplate(int id)
-        {
-            var info = blogDb.BlogInfos.FirstOrDefault();
-            if (info == null)
-            {
-                info = new BlogInfo();
-                blogDb.BlogInfos.InsertOnSubmit(info);
-            }
-
-            info.PostPageID = id;
-            blogDb.SubmitChanges();
-            cacheProvider.Remove(settingsKey);
-        }
-
-        public void UpdateSettings(int listPage, int templateId, string disqus)
-        {
-            var settings = blogDb.BlogInfos.First();
-
-            settings.ListPageID = listPage;
-            settings.Disqus = string.IsNullOrWhiteSpace(disqus) ? null : disqus;
-
-            if (Template.TemplateID != templateId)
-                pageService.ChangeTemplate(Template.ID, templateId);
-
-            blogDb.SubmitChanges();
-            cacheProvider.Remove(settingsKey);
-        }
-
-        public void Publish(int id)
+        public void Rename(string id, string name)
         {
             var post = Load(id);
+            post.Name = name;
+            post.LastModified = DateTime.UtcNow;
+            session.SaveChanges();
+        }
+
+        public void Delete(string postId)
+        {
+            var post = Load(postId);
+            session.Delete(post);
+            session.SaveChanges();
+        }
+
+        public void UpdateSettings(string listPage, string templateId, string disqus)
+        {
+            Settings.ListPageId = listPage;
+            Settings.DisqusShortName = string.IsNullOrWhiteSpace(disqus) ? null : disqus;
+
+            if (PostTemplate.TemplateId != templateId)
+                contentManager.Page.ChangeTemplate(PostTemplate.Id, templateId);
+
+            session.SaveChanges();
+
+            contentManager.Page.ClearOutputCacheDependency(HttpContext.Current);
+        }
+
+        public void UpdateBody(string postId, string html)
+        {
+            var post = Load(postId);
+            post.Body = html;
+            session.SaveChanges();
+
+            contentManager.Page.ClearOutputCacheDependency(HttpContext.Current);
+        }
+
+        public void Publish(string postId)
+        {
+            var post = Load(postId);
             post.Published = DateTime.UtcNow;
-            blogDb.SubmitChanges();
-            InvalidatePostCache();
+            session.SaveChanges();
+
+            contentManager.Page.ClearOutputCacheDependency(HttpContext.Current);
         }
 
-        public IList<KeyValuePair<Tag, int>> TagCloud(int max)
+        public IEnumerable<TagCloudItem> TagCloud(int max)
         {
-            return Published().SelectMany(p => p.PostTags)
-                .GroupBy(k => k.Tag).Select(t => new KeyValuePair<Tag, int>(t.Key, t.Count()))
-                .OrderBy(t => t.Value)
-                .ToList();
+            return session.Query<TagCloudItem>("TagCloud").OrderByDescending(t => t.Count).Take(150);
         }
 
-        public IList<Post> Posts(int page, int pageSize)
+        public IEnumerable<Post> Posts(int page, int pageSize)
         {
-            return Published().Skip(page - 1).Take(pageSize).ToList();
+            return
+                session.Query<Post>("PostsByTime").Where(p => p.Published < DateTime.UtcNow).OrderByDescending(
+                    p => p.Published).Skip(page - 1).Take(pageSize);
         }
 
-        public IList<Post> Tagged(string tag, int page, int pageSize)
+        public IEnumerable<Post> Tagged(string tag, int page, int pageSize)
         {
-            return blogDb.Tags.Where(t => t.Name == tag)
-                           .SelectMany(t => t.PostTags)
-                           .Select(pt => pt.Post)
-                           .Where(p => p.Published <= DateTime.UtcNow)
-                           .OrderByDescending(p => p.Published)
-                           .ToList();
+            return
+                session.Query<Post>("PostsByTag").Where(p => p.Tags.Any(t => t.Value == tag)).Skip(page).Take(pageSize);
         }
+
+        #endregion
     }
 }

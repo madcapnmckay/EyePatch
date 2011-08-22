@@ -8,11 +8,13 @@ namespace EyePatch.Core.Mvc.Controllers
         public MenuController(IContentManager contentManager) : base(contentManager)
         {
         }
-        
+
         [HttpGet]
         public ActionResult TopLevel()
         {
-            return View("SimpleMenu", new MenuViewModel(contentManager.Page.LoadFromFolder(contentManager.Folder.RootFolder), Request));
+            return View("SimpleMenu",
+                        new MenuViewModel(contentManager.Page.LoadFromFolder(contentManager.Folder.RootFolder.Id),
+                                          Request));
         }
     }
 }

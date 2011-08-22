@@ -18,15 +18,20 @@ namespace EyePatch.Core.Models.Tree
             ContextMenu.ContextMenus.Add(new MediaFolderContextMenu());
         }
 
+        #region Nested type: MediatTreeDefaults
+
         private class MediatTreeDefaults
         {
             public Behavior MediaFolder
             {
                 get
                 {
-                    return new Behavior { IsDraggable = false, IsDropTarget = false, CanAddChildren = true, Name = "New Folder" };
+                    return new Behavior
+                               {IsDraggable = false, IsDropTarget = false, CanAddChildren = true, Name = "New Folder"};
                 }
             }
         }
+
+        #endregion
     }
 }

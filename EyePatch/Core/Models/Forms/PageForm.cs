@@ -4,7 +4,12 @@ namespace EyePatch.Core.Models.Forms
 {
     public class PageForm
     {
-        public int Id { get; set; }
+        public PageForm()
+        {
+            UrlEditable = true;
+        }
+
+        public string Id { get; set; }
 
         public bool IsLive { get; set; }
 
@@ -13,7 +18,7 @@ namespace EyePatch.Core.Models.Forms
         public int MenuOrder { get; set; }
 
         [Required]
-        public int TemplateID { get; set; }
+        public string TemplateID { get; set; }
 
         [Required]
         public string Title { get; set; }
@@ -22,10 +27,5 @@ namespace EyePatch.Core.Models.Forms
         public string Url { get; set; }
 
         public bool UrlEditable { get; set; }
-
-        public PageForm()
-        {
-            UrlEditable = true;
-        }
     }
 }

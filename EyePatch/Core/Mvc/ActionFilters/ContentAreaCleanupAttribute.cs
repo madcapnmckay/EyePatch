@@ -1,14 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Web;
+﻿using System.Web;
 using System.Web.Mvc;
-using EyePatch.Core.Entity;
-using EyePatch.Core.Mvc.Resources;
-using EyePatch.Core.Services;
-using EyePatch.Core.Util;
-using EyePatch.Core.Util.Extensions;
-using StructureMap;
+using System.Web.Routing;
 
 namespace EyePatch.Core.Mvc.ActionFilters
 {
@@ -22,9 +14,9 @@ namespace EyePatch.Core.Mvc.ActionFilters
             {
                 if (urlHelper == null)
                 {
-                    var requestContext = new System.Web.Routing.RequestContext(
-                                new HttpContextWrapper(HttpContext.Current),
-                                new System.Web.Routing.RouteData());
+                    var requestContext = new RequestContext(
+                        new HttpContextWrapper(HttpContext.Current),
+                        new RouteData());
                     return urlHelper = new UrlHelper(requestContext);
                 }
                 return urlHelper;
@@ -33,7 +25,7 @@ namespace EyePatch.Core.Mvc.ActionFilters
 
         public override void OnResultExecuted(ResultExecutedContext filterContext)
         {
-            var orphans = filterContext.Controller.ViewBag.ContentAreas as IList<ContentArea>;
+            /*var orphans = filterContext.Controller.ViewBag.ContentAreas as IList<ContentArea>;
             if (orphans != null && orphans.Any())
             {
                 var pageService = ObjectFactory.GetInstance<IPageService>();
@@ -41,7 +33,7 @@ namespace EyePatch.Core.Mvc.ActionFilters
                 {
                     pageService.DeleteContentArea(contentArea);
                 }
-            }
+            }*/
         }
     }
-} 
+}

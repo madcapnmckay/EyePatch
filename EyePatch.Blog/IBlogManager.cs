@@ -1,40 +1,39 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using EyePatch.Blog.Entity;
+﻿using System.Collections.Generic;
+using EyePatch.Blog.Documents;
 using EyePatch.Blog.Models;
 using EyePatch.Blog.Models.Forms;
-using EyePatch.Core.Entity;
+using EyePatch.Blog.Models.Widgets;
+using EyePatch.Core.Documents;
 
 namespace EyePatch.Blog
 {
     public interface IBlogManager
     {
-        Page Template { get; }
+        Page PostTemplate { get; }
         Page PostList { get; }
-        BlogInfo Settings { get; }
+        Documents.Blog Settings { get; }
 
-        ConcurrentDictionary<string, Post> All();
+        IEnumerable<Post> All();
         BlogWindow BlogPanel();
 
         IEnumerable<Post> Drafts();
         IEnumerable<Post> Published();
-        IEnumerable<Tag> TagContaining(string query);
-        Post Load(int id);
-        Post Match(string path);
+        Post Load(string postId);
+        Post Match(string url);
 
         Post Create(string title);
         void Update(PostForm form);
-        void Rename(int id, string name);
-        void Delete(int id);
+        void Rename(string id, string name);
+        void Delete(string postId);
 
-        void AssignPostTemplate(int id);       
-        void UpdateSettings(int listPage, int templateId, string disqus);
-        void Publish(int id);   
+        void UpdateSettings(string listPage, string templateId, string disqus);
+        void UpdateBody(string postId, string html);
+        void Publish(string postId);
 
         // widget methods
-        IList<KeyValuePair<Tag, int>> TagCloud(int max);
+        IEnumerable<TagCloudItem> TagCloud(int max);
 
-        IList<Post> Posts(int page, int pageSize);
-        IList<Post> Tagged(string tag, int page, int pageSize);
+        IEnumerable<Post> Posts(int page, int pageSize);
+        IEnumerable<Post> Tagged(string tag, int page, int pageSize);
     }
 }

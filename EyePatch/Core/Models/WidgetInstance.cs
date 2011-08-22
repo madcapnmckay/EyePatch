@@ -6,9 +6,10 @@ namespace EyePatch.Core.Models
 {
     public class WidgetInstance
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string CssClass { get; set; }
         public object Contents { get; set; }
+
         [JsonProperty(PropertyName = "~initializeFunction")]
         public string InitializeFunction { get; set; }
 

@@ -1,5 +1,4 @@
-﻿using EyePatch.Core.Models;
-using EyePatch.Core.Models.Forms;
+﻿using EyePatch.Core.Models.Forms;
 
 namespace EyePatch.Core.Services
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EyePatch.Blog.Entity;
+using EyePatch.Blog.Documents;
 using EyePatch.Blog.Models.Forms;
 
 namespace EyePatch.Blog.Models
@@ -25,11 +25,11 @@ namespace EyePatch.Blog.Models
         public static PostForm ToForm(this Post post)
         {
             var result = new PostForm();
-            result.Id = post.ID;
+            result.Id = post.Id;
             result.Published = post.Published != null && post.Published <= DateTime.UtcNow;
             result.Title = post.Title ?? string.Empty;
             result.Url = post.Url ?? string.Empty;
-            result.Tags = string.Join(", ", post.PostTags.Select(t => t.Tag.Name));
+            result.Tags = string.Join(", ", post.Tags.Select(t => t.Value));
             return result;
         }
     }

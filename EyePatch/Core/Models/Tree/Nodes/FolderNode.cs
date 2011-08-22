@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using EyePatch.Core.Util.Extensions;
+using EyePatch.Core.Documents.Children;
 using NKnockoutUI.Tree;
 
 namespace EyePatch.Core.Models.Tree.Nodes
@@ -11,31 +11,22 @@ namespace EyePatch.Core.Models.Tree.Nodes
             CssClass = "folder";
         }
 
-        public FolderNode(HierarchyNode<Entity.Folder> folder) : this()
-        {
-            var entity = folder.Entity;
-            Id = entity.ID.ToString();
-            Name = entity.Name;
-
-            folder.ChildNodes.ToList().ForEach(AddFolder);
-            entity.Pages.Where(p => !p.IsHidden).ToList().ForEach(AddPage);
-        }
-
-        public FolderNode(Entity.Folder folder)
+        public FolderNode(IFolderItem folder)
             : this()
         {
-            Id = folder.ID.ToString();
+            Id = folder.Id;
             Name = folder.Name;
 
-            folder.Pages.Where(p => !p.IsHidden).ToList().ForEach(AddPage);
+            folder.Folders.ToList().ForEach(AddFolder);
+            folder.Pages.ToList().ForEach(AddPage);
         }
 
-        private void AddFolder(HierarchyNode<Entity.Folder> folder)
+        private void AddFolder(IFolderItem folder)
         {
             Children.Add(new FolderNode(folder));
         }
 
-        public void AddPage(Entity.Page page)
+        public void AddPage(PageItem page)
         {
             Children.Add(new PageNode(page));
         }

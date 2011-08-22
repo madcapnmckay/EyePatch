@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Routing;
+using EyePatch.Core;
 using StructureMap;
 
 namespace EyePatch.Blog
@@ -7,6 +8,7 @@ namespace EyePatch.Blog
     public class TaggedRoute : Route
     {
         #region Constructors
+
         public TaggedRoute(string url, IRouteHandler routeHandler)
             : base(url, routeHandler)
         {
@@ -17,15 +19,18 @@ namespace EyePatch.Blog
         {
         }
 
-        public TaggedRoute(string url, RouteValueDictionary defaults, RouteValueDictionary constraints, IRouteHandler routeHandler)
+        public TaggedRoute(string url, RouteValueDictionary defaults, RouteValueDictionary constraints,
+                           IRouteHandler routeHandler)
             : base(url, defaults, constraints, routeHandler)
         {
         }
 
-        public TaggedRoute(string url, RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler routeHandler)
+        public TaggedRoute(string url, RouteValueDictionary defaults, RouteValueDictionary constraints,
+                           RouteValueDictionary dataTokens, IRouteHandler routeHandler)
             : base(url, defaults, constraints, dataTokens, routeHandler)
         {
         }
+
         #endregion
 
         public override RouteData GetRouteData(HttpContextBase httpContext)
@@ -37,15 +42,22 @@ namespace EyePatch.Blog
                 return null;
 
             var blogManager = ObjectFactory.GetInstance<IBlogManager>();
+            var contentManager = ObjectFactory.GetInstance<IContentManager>();
 
             var page = blogManager.PostList;
 
             if (page == null)
                 return null;
 
-            routeData.Values["controller"] = page.Template.Controller;
-            routeData.Values["action"] = page.Template.Action;
+            var template = contentManager.Template.Load(page.TemplateId);
+
+            if (template == null)
+                return null;
+
+            routeData.Values["controller"] = template.Controller;
+            routeData.Values["action"] = template.Action;
             routeData.Values["page"] = page;
+            routeData.Values["template"] = template;
 
             return routeData;
         }

@@ -6,8 +6,10 @@ namespace EyePatch.Core.Widgets
     {
         protected const string defaultContents = "Click here to edit this text";
 
-        private ResourceCollection adminJs;
         private ResourceCollection adminCss;
+        private ResourceCollection adminJs;
+
+        #region IWidget Members
 
         public string Name
         {
@@ -31,14 +33,21 @@ namespace EyePatch.Core.Widgets
 
         public ResourceCollection Js
         {
-            get { return ResourceCollection.Empty; }
+            get { 
+                return new ResourceCollection()
+                    .Load("/core/js/codemirror/codemirror.js", MatchMode.Path)
+                    .Load("/core/js/codemirror/runmode.js", MatchMode.Path)
+                    .Load("/core/widgets/html/eyepatch-widgets-codeblock.js", MatchMode.FileName); 
+            }
         }
 
         public ResourceCollection Css
         {
             get
             {
-                return ResourceCollection.Empty;
+                return new ResourceCollection()
+                    .Load("/core/js/codemirror/codemirror.css", MatchMode.Path)
+                    .Load("/core/js/codemirror/default.css", MatchMode.Path);
             }
         }
 
@@ -49,31 +58,30 @@ namespace EyePatch.Core.Widgets
                 if (adminJs == null)
                 {
                     adminJs = new ResourceCollection()
-                                    
-                                    .Load("/core/js/rangy-core.js", MatchMode.Path)
-                                    .Load("/core/js/rangy-selectionsaverestore.js", MatchMode.Path)
-                                    .Load("/core/js/rangy-cssclassapplier.js", MatchMode.Path)                                 
-                    	            .Load("/core/js/codemirror/codemirror.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/clike/clike.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/css/css.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/diff/diff.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/haskell/haskell.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/htmlmixed/htmlmixed.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/javascript/javascript.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/lua/lua.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/php/php.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/plsql/plsql.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/python/python.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/rst/rst.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/scheme/scheme.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/python/python.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/smalltalk/smalltalk.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/sparql/sparql.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/stex/stex.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/xml/xml.js", MatchMode.Path)
-	                                .Load("/core/js/codemirror/yaml/yaml.js", MatchMode.Path)
-                                    .Load("/core/js/knockout-ui/ui-editor.js", MatchMode.Path)
-                                    .Load("/core/widgets/html/eyepatch-widgets-html-admin.js", MatchMode.Path);
+                        .Load("/core/js/rangy-core.js", MatchMode.Path)
+                        .Load("/core/js/rangy-selectionsaverestore.js", MatchMode.Path)
+                        .Load("/core/js/rangy-cssclassapplier.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/codemirror.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/clike/clike.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/css/css.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/diff/diff.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/haskell/haskell.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/htmlmixed/htmlmixed.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/javascript/javascript.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/lua/lua.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/php/php.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/plsql/plsql.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/python/python.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/rst/rst.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/scheme/scheme.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/python/python.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/smalltalk/smalltalk.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/sparql/sparql.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/stex/stex.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/xml/xml.js", MatchMode.Path)
+                        .Load("/core/js/codemirror/yaml/yaml.js", MatchMode.Path)
+                        .Load("/core/js/knockout-ui/ui-editor.js", MatchMode.Path)
+                        .Load("/core/widgets/html/eyepatch-widgets-html-admin.js", MatchMode.FileName);
                 }
                 return adminJs;
             }
@@ -93,6 +101,15 @@ namespace EyePatch.Core.Widgets
             }
         }
 
+        public void Render(WidgetContext context)
+        {
+            context.Writer.Write(string.IsNullOrWhiteSpace(context.Instance.Contents)
+                                     ? defaultContents
+                                     : context.Instance.Contents);
+        }
+
+        #endregion
+
         public void Startup()
         {
             // nothin to do
@@ -102,14 +119,5 @@ namespace EyePatch.Core.Widgets
         {
             // nothing to do
         }
-
-        public void Render(WidgetContext context)
-        {
-            context.Writer.Write(string.IsNullOrWhiteSpace(context.Instance.Contents)
-                                      ? defaultContents
-                                      : context.Instance.Contents);
-        }
     }
 }
-
-

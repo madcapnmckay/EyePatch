@@ -1,4 +1,4 @@
-﻿using EyePatch.Blog.Entity;
+﻿using EyePatch.Blog.Documents;
 using NKnockoutUI.Tree;
 
 namespace EyePatch.Blog.Models
@@ -13,7 +13,7 @@ namespace EyePatch.Blog.Models
         public PostNode(Post post)
             : this()
         {
-            Id = post.ID.ToString();
+            Id = post.Id;
             Name = post.Name;
         }
     }

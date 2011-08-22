@@ -7,27 +7,27 @@ using StructureMap.Configuration.DSL;
 
 namespace EyePatch.Core.IoC
 {
-    public class PluginRegistry: Registry
+    public class PluginRegistry : Registry
     {
         public PluginRegistry()
         {
             var widgetDir = HttpContext.Current.Server.MapPath(ContentManager.PluginDir);
 
             Scan(x =>
-            {
-                x.TheCallingAssembly();
-                x.AddAllTypesOf<IWidget>();
-            });
+                     {
+                         x.TheCallingAssembly();
+                         x.AddAllTypesOf<IWidget>();
+                     });
             Scan(x =>
-            {
-                x.TheCallingAssembly();
-                x.AssembliesFromPath(widgetDir);
-                x.LookForRegistries();
-                x.AddAllTypesOf<IEyePatchPlugin>();
-                x.AddAllTypesOf<IWidget>();
-                x.AddAllTypesOf<IController>();
-                x.AddAllTypesOf<IRouteRegistry>();
-            });
+                     {
+                         x.TheCallingAssembly();
+                         x.AssembliesFromPath(widgetDir);
+                         x.LookForRegistries();
+                         x.AddAllTypesOf<IEyePatchPlugin>();
+                         x.AddAllTypesOf<IWidget>();
+                         x.AddAllTypesOf<IController>();
+                         x.AddAllTypesOf<IRouteRegistry>();
+                     });
         }
     }
 }

@@ -15,8 +15,14 @@ namespace EyePatch.Core.Models
             Width = 500;
             Height = 700;
 
-            Buttons.Add(new Button { Title = "click here to log out of EyePatch", IconCssClass = "close", OnClick = "ep.actions.logout", CssClass = "title-button red" });
-            Buttons.Add(new Button { Title = "click here to minimize", IconCssClass = "minimize", OnClick = "minimize" });
+            Buttons.Add(new Button
+                            {
+                                Title = "click here to log out of EyePatch",
+                                IconCssClass = "close",
+                                OnClick = "ep.actions.logout",
+                                CssClass = "title-button red"
+                            });
+            Buttons.Add(new Button {Title = "click here to minimize", IconCssClass = "minimize", OnClick = "minimize"});
         }
     }
 }

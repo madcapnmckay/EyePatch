@@ -19,12 +19,12 @@ namespace EyePatch.Core.Mvc.Validation
         public override string FormatErrorMessage(string name)
         {
             return String.Format(CultureInfo.CurrentUICulture, ErrorMessageString,
-                name, _minCharacters);
+                                 name, _minCharacters);
         }
 
         public override bool IsValid(object value)
         {
-            string valueAsString = value as string;
+            var valueAsString = value as string;
             return (valueAsString != null && valueAsString.Length >= _minCharacters);
         }
     }

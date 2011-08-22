@@ -1,5 +1,4 @@
-﻿
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace EyePatch.Blog.Util.Extensions
 {
@@ -14,9 +13,9 @@ namespace EyePatch.Blog.Util.Extensions
 
             if (paragraphRegex.Success)
             {
-               input = paragraphRegex.Groups[1].Value;
+                input = paragraphRegex.Groups[1].Value;
             }
-            
+
             if (text.Length > 0)
             {
                 var words = input.Split(' ');

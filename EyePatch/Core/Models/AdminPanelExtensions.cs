@@ -1,44 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using System.Web.UI;
+using EyePatch.Core.Documents;
+using EyePatch.Core.Documents.Children;
+using EyePatch.Core.Documents.Extensions;
 using EyePatch.Core.Models.Forms;
 using EyePatch.Core.Models.Tree;
 using EyePatch.Core.Models.Tree.Nodes;
 using EyePatch.Core.Mvc.Resources;
-using EyePatch.Core.Util.Extensions;
+using EyePatch.Core.Plugins;
+using EyePatch.Core.Services;
 using EyePatch.Core.Widgets;
-using Newtonsoft.Json.Serialization;
+using Page = EyePatch.Core.Documents.Page;
 
 namespace EyePatch.Core.Models
 {
     public static class AdminPanelExtensions
     {
-        public static PageTree ToViewModel(this IEnumerable<Entity.Folder> folders)
+        public static PageTree ToViewModel(this Folder root)
         {
-            var result = new PageTree();
-            var hierarchy = folders.AsHierarchy(k => k.ID, p => p.ParentID).ToList();
-            hierarchy.ForEach(result.AddFolder);
-            return result;
+            return new PageTree(root);
+            ;
         }
 
-        public static WidgetTree ToViewModel(this IEnumerable<Entity.Plugin> plugins)
+        public static WidgetTree ToViewModel(this IEnumerable<IEyePatchPlugin> plugins)
         {
             var result = new WidgetTree();
-            var hierarchy = plugins.ToList();
-            hierarchy.ForEach(result.AddWidgetGroup);
+            plugins.ToList().ForEach(result.AddWidgetGroup);
             return result;
         }
 
-        public static TemplateTree ToViewModel(this IEnumerable<Entity.Template> templates)
+        public static TemplateTree ToViewModel(this IEnumerable<Template> templates)
         {
             var result = new TemplateTree();
-            var hierarchy = templates.ToList();
-            hierarchy.ForEach(result.AddTemplate);
+            templates.ToList().ForEach(result.AddTemplate);
             return result;
         }
 
@@ -49,24 +46,24 @@ namespace EyePatch.Core.Models
             return result;
         }
 
-        public static PageForm ToViewModel(this Entity.Page page, Entity.Page homepage)
+        public static PageForm ToViewModel(this Page page)
         {
             var result = new PageForm();
-            result.Id = page.ID;
+            result.Id = page.Id;
             result.IsLive = page.IsLive;
-            result.TemplateID = page.TemplateID;
+            result.TemplateID = page.TemplateId;
             result.Title = page.Title ?? string.Empty;
             result.Url = page.Url ?? string.Empty;
-            result.UrlEditable = page.ID != homepage.ID;
+            result.UrlEditable = page.Url != "/";
             result.IsInMenu = page.IsInMenu;
             result.MenuOrder = page.MenuOrder;
             return result;
         }
 
-        public static PageSearchForm ToSearchViewModel(this Entity.Page page)
+        public static PageSearchForm ToSearchViewModel(this Page page, ITemplateService templateService)
         {
             var form = new PageSearchForm();
-            form.Id = page.ID;
+            form.Id = page.Id;
             form.Description = page.Description ?? string.Empty;
             form.Keywords = page.Keywords ?? string.Empty;
             form.Language = page.Language ?? 1033;
@@ -75,14 +72,14 @@ namespace EyePatch.Core.Models
             form.Copyright = page.Copyright ?? string.Empty;
             form.Robots = page.Robots ?? string.Empty;
 
-            form.Def = page.Template.ToSearchViewModel();
+            form.Def = templateService.Load(page.TemplateId).ToSearchViewModel();
             return form;
         }
 
-        public static PageFacebookForm ToFacebookViewModel(this Entity.Page page)
+        public static PageFacebookForm ToFacebookViewModel(this Page page, ITemplateService templateService)
         {
             var form = new PageFacebookForm();
-            form.Id = page.ID;
+            form.Id = page.Id;
             form.Type = page.OgType ?? string.Empty;
             form.Email = page.OgEmail ?? string.Empty;
             form.Phone = page.OgPhone ?? string.Empty;
@@ -95,19 +92,19 @@ namespace EyePatch.Core.Models
             form.Longitude = page.OgLongitude;
             form.Latitude = page.OgLatitude;
 
-            form.Def = page.Template.ToFacebookViewModel();
+            form.Def = templateService.Load(page.TemplateId).ToFacebookViewModel();
             return form;
         }
 
-        public static TemplateForm ToViewModel(this Entity.Template template)
+        public static TemplateForm ToViewModel(this Template template)
         {
-            return new TemplateForm { Id = template.ID, AnalyticsKey = template.AnalyticsKey };
+            return new TemplateForm {Id = template.Id, AnalyticsKey = template.AnalyticsKey};
         }
 
-        public static SearchForm ToSearchViewModel(this Entity.Template template)
+        public static SearchForm ToSearchViewModel(this Template template)
         {
             var form = new SearchForm();
-            form.Id = template.ID;
+            form.Id = template.Id;
             form.Description = template.Description ?? string.Empty;
             form.Keywords = template.Keywords ?? string.Empty;
             form.Language = template.Language ?? 1033;
@@ -118,10 +115,10 @@ namespace EyePatch.Core.Models
             return form;
         }
 
-        public static FacebookForm ToFacebookViewModel(this Entity.Template template)
+        public static FacebookForm ToFacebookViewModel(this Template template)
         {
             var form = new FacebookForm();
-            form.Id = template.ID;
+            form.Id = template.Id;
             form.Type = template.OgType ?? string.Empty;
             form.Email = template.OgEmail ?? string.Empty;
             form.Phone = template.OgPhone ?? string.Empty;
@@ -136,12 +133,14 @@ namespace EyePatch.Core.Models
             return form;
         }
 
-        public static WidgetInstance ToViewModel(this Entity.WidgetInstance pageWidget, IContentManager contentManager, Controller controller)
+        public static WidgetInstance ToViewModel(this Widget pageWidget, string pageId, IContentManager contentManager,
+                                                 Controller controller, string sourceUrl)
         {
             var widget = pageWidget.GetInstance();
 
-            var pageJs = contentManager.Page.Js(pageWidget.ContentArea.PageID);
-            var pageCss = contentManager.Page.Css(pageWidget.ContentArea.PageID);
+            var page = contentManager.Page.Load(pageId);
+            var pageJs = contentManager.Page.Js(pageId);
+            var pageCss = contentManager.Page.Css(pageId);
 
             pageJs.AddRange(AdminPanelViewModel.DependentJs);
             pageCss.AddRange(AdminPanelViewModel.DependentCss);
@@ -150,28 +149,28 @@ namespace EyePatch.Core.Models
                 contentManager.Resources.GetResourcePaths(widget.AdminJs.Except(pageJs).ToResourceCollection()).ToList();
 
             var remainingCss =
-                contentManager.Resources.GetResourcePaths(widget.AdminCss.Except(pageCss).ToResourceCollection()).ToList();
+                contentManager.Resources.GetResourcePaths(widget.AdminCss.Except(pageCss).ToResourceCollection()).ToList
+                    ();
 
             string contents;
             using (var sw = new MemoryStream())
             {
                 using (var writer = new HtmlTextWriter(new StringWriter()))
                 {
-                    widget.Render(new WidgetContext(controller.ControllerContext, pageWidget, writer));
+                    widget.Render(new WidgetContext(controller.ControllerContext, pageWidget, writer, sourceUrl));
                     contents = writer.InnerWriter.ToString();
                 }
             }
 
             return new WidgetInstance
-                             {
-                                 Id = pageWidget.ID,
-                                 InitializeFunction = widget.CreateFunction,
-                                 CssClass = widget.CssClass,
-                                 Js = remainingJs,
-                                 Css = remainingCss,
-                                 Contents = contents
-                             };
-
+                       {
+                           Id = pageWidget.Id,
+                           InitializeFunction = widget.CreateFunction,
+                           CssClass = widget.CssClass,
+                           Js = remainingJs,
+                           Css = remainingCss,
+                           Contents = contents
+                       };
         }
     }
 }

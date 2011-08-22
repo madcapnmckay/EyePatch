@@ -98,10 +98,11 @@ ep.onLoad = function () {
 
     ep.mediaFolderContents = new ko.imagePicker.viewModel({ images: data.images, handlers: ep.actions.file });
     ep.mediaFolders = new ko.tree.viewModel(data.mediaFolders);
-    
+
     // center the window initially
     data.windows[0].position = Math.floor((ep.body.width() / 2) - (data.windows[0].width / 2)) + ',100';
     ep.interfaces = new ko.windowManager.viewModel({ windows: data.windows, cssClass: "eyepatch-admin" });
 
     ep.initialize();
+    ep.hideLoader();
 };

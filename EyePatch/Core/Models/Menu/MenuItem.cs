@@ -2,6 +2,14 @@
 {
     public class MenuItem
     {
+        public MenuItem(string title, string description, string url, bool isActive)
+        {
+            Title = title;
+            Url = url;
+            Description = description;
+            IsActive = isActive;
+        }
+
         public string Title { get; protected set; }
         public string Description { get; protected set; }
         public string Url { get; protected set; }
@@ -11,14 +19,6 @@
         public string CssClass
         {
             get { return IsActive ? "active" : "inactive"; }
-        }
-
-        public MenuItem(string title, string description, string url, bool isActive)
-        {
-            Title = title;
-            Url = url;
-            Description = description;
-            IsActive = isActive;
         }
     }
 }

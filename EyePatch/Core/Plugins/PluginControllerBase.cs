@@ -5,14 +5,17 @@ namespace EyePatch.Core.Plugins
 {
     public class PluginControllerBase : BaseController
     {
-        public PluginControllerBase(IContentManager contentManager) : base(contentManager) { }
+        public PluginControllerBase(IContentManager contentManager) : base(contentManager)
+        {
+        }
 
         private string GetPluginPath(string viewName)
         {
             var controllerName = RouteData.GetRequiredString("controller");
             var view = string.IsNullOrEmpty(viewName) ? RouteData.GetRequiredString("action") : viewName;
             var assemblyName = GetType().Assembly.FullName.Split(',')[0];
-            return string.Format(@"{3}/{0}.dll/{0}.Views.{1}.{2}.cshtml", assemblyName, controllerName, view, ContentManager.PluginDir);
+            return string.Format(@"{3}/{0}.dll/{0}.Views.{1}.{2}.cshtml", assemblyName, controllerName, view,
+                                 ContentManager.PluginDir);
         }
 
         protected override ViewResult View(string viewName, string masterName, object model)
@@ -23,12 +26,12 @@ namespace EyePatch.Core.Plugins
             }
 
             return new ViewResult
-            {
-                ViewName = GetPluginPath(viewName),
-                MasterName = masterName,
-                ViewData = ViewData,
-                TempData = TempData
-            };
+                       {
+                           ViewName = GetPluginPath(viewName),
+                           MasterName = masterName,
+                           ViewData = ViewData,
+                           TempData = TempData
+                       };
         }
 
         protected override PartialViewResult PartialView(string viewName, object model)
@@ -39,11 +42,11 @@ namespace EyePatch.Core.Plugins
             }
 
             return new PartialViewResult
-            {
-                ViewName = GetPluginPath(viewName),
-                ViewData = ViewData,
-                TempData = TempData
-            };
+                       {
+                           ViewName = GetPluginPath(viewName),
+                           ViewData = ViewData,
+                           TempData = TempData
+                       };
         }
     }
 }

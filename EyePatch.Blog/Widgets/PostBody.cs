@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Web.Routing;
+﻿using System.Web.Routing;
 using EyePatch.Core.Mvc.Resources;
 using EyePatch.Core.Widgets;
 
@@ -14,10 +13,10 @@ namespace EyePatch.Blog.Widgets
             get
             {
                 return new RouteValueDictionary(new
-                {
-                    controller = "Blog",
-                    action = "Post"
-                });
+                                                    {
+                                                        controller = "Blog",
+                                                        action = "Post"
+                                                    });
             }
         }
 
@@ -43,12 +42,23 @@ namespace EyePatch.Blog.Widgets
 
         public override ResourceCollection Js
         {
-            get { return ResourceCollection.Empty; }
+            get
+            {
+                return new ResourceCollection()
+                  .Load("/core/js/codemirror/codemirror.js", MatchMode.Path)
+                  .Load("/core/js/codemirror/runmode.js", MatchMode.Path)
+                  .Load("/core/widgets/html/eyepatch-widgets-codeblock.js", MatchMode.FileName);
+            }
         }
 
         public override ResourceCollection Css
         {
-            get { return ResourceCollection.Empty; }
+            get
+            {
+                return new ResourceCollection()
+                  .Load("/core/js/codemirror/codemirror.css", MatchMode.Path)
+                  .Load("/core/js/codemirror/default.css", MatchMode.Path);
+            }
         }
 
         public override ResourceCollection AdminJs
@@ -58,9 +68,10 @@ namespace EyePatch.Blog.Widgets
                 if (adminJs == null)
                 {
                     adminJs = new ResourceCollection()
-                                    .Load("/core/js/rangy-core.js", MatchMode.Path)
-                                    .Load("/core/js/rangy-cssclassapplier.js", MatchMode.Path)
-                                    .Load("/core/js/knockout-ui/ui-editor.js", MatchMode.Path);
+                        .Load("/core/js/rangy-core.js", MatchMode.Path)
+                        .Load("/core/js/rangy-selectionsaverestore.js", MatchMode.Path)
+                        .Load("/core/js/rangy-cssclassapplier.js", MatchMode.Path)
+                        .Load("/core/js/knockout-ui/ui-editor.js", MatchMode.Path);
                 }
                 return adminJs;
             }

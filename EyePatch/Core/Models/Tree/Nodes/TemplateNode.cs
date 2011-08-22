@@ -1,4 +1,5 @@
-﻿using NKnockoutUI.Tree;
+﻿using EyePatch.Core.Documents;
+using NKnockoutUI.Tree;
 
 namespace EyePatch.Core.Models.Tree.Nodes
 {
@@ -9,10 +10,10 @@ namespace EyePatch.Core.Models.Tree.Nodes
             CssClass = "template";
         }
 
-        public TemplateNode(Entity.Template template)
+        public TemplateNode(Template template)
             : this()
         {
-            Id = template.ID.ToString();
+            Id = template.Id;
             Name = template.Name;
 
             // meta nodes

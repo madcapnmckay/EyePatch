@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Web;
 using System.Web.Compilation;
 using System.Web.Hosting;
 using EyePatch.Core.Util.Files;
@@ -12,12 +9,25 @@ using EyePatch.Core.Util.Files;
 namespace EyePatch.Core.Plugins
 {
     /// <summary>
-    /// Loads plugin types so the runtime can load them
-    /// http://shazwazza.com/post/Developing-a-plugin-framework-in-ASPNET-with-medium-trust.aspx
+    ///   Loads plugin types so the runtime can load them
+    ///   http://shazwazza.com/post/Developing-a-plugin-framework-in-ASPNET-with-medium-trust.aspx
     /// </summary>
     public class PreApplicationInit
     {
         private static readonly ReaderWriterLockSlim Locker = new ReaderWriterLockSlim();
+
+        /// <summary>
+        ///   The source plugin folder from which to shadow copy from
+        /// </summary>
+        /// <remarks>
+        ///   This folder can contain sub folderst to organize plugin types
+        /// </remarks>
+        private static readonly DirectoryInfo pluginFolder;
+
+        /// <summary>
+        ///   The folder to shadow copy the plugin DLLs to use for running the app
+        /// </summary>
+        private static readonly DirectoryInfo shadowCopyFolder;
 
         static PreApplicationInit()
         {
@@ -25,40 +35,30 @@ namespace EyePatch.Core.Plugins
             shadowCopyFolder = new DirectoryInfo(HostingEnvironment.MapPath(ContentManager.PluginTempDir));
         }
 
-        /// <summary>
-        /// The source plugin folder from which to shadow copy from
-        /// </summary>
-        /// <remarks>
-        /// This folder can contain sub folderst to organize plugin types
-        /// </remarks>
-        private static readonly DirectoryInfo pluginFolder;
-
-        /// <summary>
-        /// The folder to shadow copy the plugin DLLs to use for running the app
-        /// </summary>
-        private static readonly DirectoryInfo shadowCopyFolder;
-
         public static void Initialize()
         {
             using (new WriteLockDisposable(Locker))
             {
-
                 Directory.CreateDirectory(shadowCopyFolder.FullName);
 
                 //clear out plugins, need to be renamed
                 foreach (var f in shadowCopyFolder.GetFiles("*.dll", SearchOption.AllDirectories))
                 {
-                    var filename = Path.Combine(f.DirectoryName, f.Name + ".old");
+                    var filename = Path.Combine(f.DirectoryName, Guid.NewGuid().ToString() + f.Name + ".old");
+                    File.Move(f.FullName, filename);
+                }
+
+                // delete old files if possible
+                foreach (var f in shadowCopyFolder.GetFiles("*.old", SearchOption.AllDirectories))
+                {
                     try
                     {
-                        if (File.Exists(filename))
-                            File.Delete(filename);
-                    } catch(UnauthorizedAccessException ex)
+                        f.Delete();
+                    } 
+                    catch
                     {
-
+                        
                     }
-
-                    File.Move(f.FullName, filename);
                 }
 
                 //shadow copy files

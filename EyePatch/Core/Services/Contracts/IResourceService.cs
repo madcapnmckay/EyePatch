@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using EyePatch.Core.Mvc.Resources;
 
 namespace EyePatch.Core.Services

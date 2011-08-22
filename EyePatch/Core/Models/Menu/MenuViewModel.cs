@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Web;
-using EyePatch.Core.Entity;
+using EyePatch.Core.Documents.Children;
 
 namespace EyePatch.Core.Models.Menu
 {
     public class MenuViewModel : List<MenuItem>
     {
-        public MenuViewModel(IEnumerable<Page> pages, HttpRequestBase request)
+        public MenuViewModel(IEnumerable<PageItem> pages, HttpRequestBase request)
         {
             foreach (var page in pages)
             {

@@ -1,5 +1,4 @@
 ﻿using System;
-using EyePatch.Core.Util.Extensions;
 
 namespace EyePatch.Core.Mvc.Sitemap
 {
@@ -10,6 +9,8 @@ namespace EyePatch.Core.Mvc.Sitemap
             Url = url;
         }
 
+        #region ISiteMapItem Members
+
         public string Url { get; set; }
 
         public DateTime? LastModified { get; set; }
@@ -17,5 +18,7 @@ namespace EyePatch.Core.Mvc.Sitemap
         public ChangeFrequency? ChangeFrequency { get; set; }
 
         public double? Priority { get; set; }
+
+        #endregion
     }
 }

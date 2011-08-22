@@ -39,6 +39,6 @@ namespace EyePatch.Core.Util.Extensions
                 default:
                     throw new RulesException("", "An unknown error occurred. Please verify your entry and try again. If the problem persists, please contact your system administrator.");
             }*/
-        } 
+        }
     }
 }

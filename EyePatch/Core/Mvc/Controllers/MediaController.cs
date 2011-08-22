@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -12,7 +11,7 @@ namespace EyePatch.Core.Mvc.Controllers
     [Authorize(Roles = "Admin")]
     public class MediaController : BaseController
     {
-        protected static string[] fileTypes = new string[] { ".tif", ".jpg", ".jpeg", ".png", ".bmp", ".gif" };
+        protected static string[] fileTypes = new[] {".tif", ".jpg", ".jpeg", ".png", ".bmp", ".gif"};
 
         public MediaController(IContentManager contentManager)
             : base(contentManager)
@@ -30,7 +29,7 @@ namespace EyePatch.Core.Mvc.Controllers
                 Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly).Where(
                     s => Path.GetExtension(s) != null && fileTypes.Contains(Path.GetExtension(s).ToLowerInvariant()));
 
-            return JsonNet(new {success = true, data = files.Select(PathHelper.PhysicalToUrl) });
+            return JsonNet(new {success = true, data = files.Select(PathHelper.PhysicalToUrl)});
         }
 
         [HttpPost]
@@ -52,28 +51,35 @@ namespace EyePatch.Core.Mvc.Controllers
         [HttpPost]
         public JsonResult Add(string name, string parentId)
         {
-            return JsonNet(new { success = true, data = new MediaFolderNode(contentManager.Media.CreateFolder(PathHelper.CombineUrl(parentId, name))) });
+            return
+                JsonNet(
+                    new
+                        {
+                            success = true,
+                            data =
+                        new MediaFolderNode(contentManager.Media.CreateFolder(PathHelper.CombineUrl(parentId, name)))
+                        });
         }
 
         [HttpPost]
         public JsonResult Rename(string id, string name)
         {
             contentManager.Media.RenameFolder(id, name);
-            return JsonNet(new { success = true });
+            return JsonNet(new {success = true});
         }
 
         [HttpPost]
         public JsonResult Remove(string id)
         {
             contentManager.Media.DeleteFolder(id);
-            return JsonNet(new { success = true });
+            return JsonNet(new {success = true});
         }
 
         [HttpPost]
         public JsonResult RemoveImage(string id)
         {
             contentManager.Media.DeleteImage(id);
-            return JsonNet(new { success = true });
+            return JsonNet(new {success = true});
         }
 
         [HttpPost]
@@ -81,9 +87,10 @@ namespace EyePatch.Core.Mvc.Controllers
         {
             var path = Server.MapPath("/Media/");
             var files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).Where(
-                    s => Path.GetExtension(s) != null && fileTypes.Contains(Path.GetExtension(s).ToLowerInvariant())).OrderByDescending(System.IO.File.GetLastWriteTime);
+                s => Path.GetExtension(s) != null && fileTypes.Contains(Path.GetExtension(s).ToLowerInvariant())).
+                OrderByDescending(System.IO.File.GetLastWriteTime);
 
-            return JsonNet(new { success = true, images = files.Select(PathHelper.PhysicalToUrl) });
+            return JsonNet(new {success = true, images = files.Select(PathHelper.PhysicalToUrl)});
         }
     }
 }

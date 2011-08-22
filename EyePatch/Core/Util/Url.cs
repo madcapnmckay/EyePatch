@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Web;
 
 namespace EyePatch.Core.Util
 {
@@ -16,7 +13,7 @@ namespace EyePatch.Core.Util
             if (!resolvedBase.EndsWith("/"))
                 resolvedBase += "/";
 
-            var test =  VirtualPathUtility.Combine(resolvedBase, relativeUrl);
+            var test = VirtualPathUtility.Combine(resolvedBase, relativeUrl);
             return test;
         }
     }

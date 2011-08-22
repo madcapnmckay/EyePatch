@@ -2,7 +2,7 @@
 
 namespace EyePatch.Core.Models
 {
-    public class PageContextMenu: ContextMenu
+    public class PageContextMenu : ContextMenu
     {
         public PageContextMenu()
             : base("page", 190)

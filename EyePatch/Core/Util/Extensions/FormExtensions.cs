@@ -7,7 +7,8 @@ namespace EyePatch.Core.Util.Extensions
 {
     public static class FormExtensions
     {
-        public static MvcHtmlString HelpfulLabelFor<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> expression)
+        public static MvcHtmlString HelpfulLabelFor<TModel, TValue>(this HtmlHelper<TModel> html,
+                                                                    Expression<Func<TModel, TValue>> expression)
         {
             var metaData = ModelMetadata.FromLambdaExpression(expression, html.ViewData);
             if (string.IsNullOrWhiteSpace(metaData.Description))
@@ -15,7 +16,9 @@ namespace EyePatch.Core.Util.Extensions
 
             var label = html.LabelFor(expression);
             return new MvcHtmlString(label.ToString().Replace("</label>",
-                           string.Format(" <span class=\"help\" title=\"{0}\"></span></label>", metaData.Description)));
+                                                              string.Format(
+                                                                  " <span class=\"help\" title=\"{0}\"></span></label>",
+                                                                  metaData.Description)));
         }
     }
 }

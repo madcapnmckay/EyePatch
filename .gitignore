@@ -33,3 +33,4 @@ EyePatch/Plugins/*.dll
 EyePatch/Plugins/temp/
 EyePatch/Resources/Cache
 EyePatch/Media/
+EyePatch/App_Data

@@ -1,5 +1,6 @@
 ﻿using System;
-using EyePatch.Blog.Entity;
+using EyePatch.Blog.Documents;
+using EyePatch.Blog.Documents.Extensions;
 using EyePatch.Blog.Util.ActionResult;
 using EyePatch.Blog.Util.Extensions;
 using EyePatch.Core.Util.Extensions;
@@ -8,14 +9,18 @@ namespace EyePatch.Blog.Models.Widgets
 {
     public class PostSummary : IRss
     {
-        protected Post post;
-        protected BlogInfo blogInfo;
+        protected Documents.Blog blog;
         protected int index;
         protected int pageSize;
+        protected Post post;
 
-        public string Title { get { return post.Title; } }
-
-        public string Description { get { return post.Body.TruncateWords(50); } }
+        public PostSummary(Post post, Documents.Blog blog, int index, int pageSize)
+        {
+            this.post = post;
+            this.blog = blog;
+            this.index = index;
+            this.pageSize = pageSize;
+        }
 
         public bool IsFirst
         {
@@ -29,36 +34,52 @@ namespace EyePatch.Blog.Models.Widgets
 
         public bool IsEven
         {
-            get { return index % 2 == 0; }
+            get { return index%2 == 0; }
         }
 
-        public string CssClass { get
+        public string CssClass
         {
-            var cssClass = "post-summary";
+            get
+            {
+                var cssClass = "post-summary";
 
-            if (IsFirst)
-                cssClass += " post-first";
+                if (IsFirst)
+                    cssClass += " post-first";
 
-            if (IsLast)
-                cssClass += " post-last";
+                if (IsLast)
+                    cssClass += " post-last";
 
-            if (IsEven)
-                cssClass += " post-even";
+                if (IsEven)
+                    cssClass += " post-even";
 
-            return cssClass;
-        }}
+                return cssClass;
+            }
+        }
 
-        public string Link { get { return post.Url; } }
+        public bool CommentsEnabled
+        {
+            get { return blog.CommentsEnabled(); }
+        }
 
-        public bool CommentsEnabled { get { return blogInfo.CommentsEnabled; } }
+        public string CommentCountUrl
+        {
+            get { return string.Format("{0}#disqus_thread", Permalink); }
+        }
 
-        public string CommentCountUrl { get { return string.Format("{0}#disqus_thread", Permalink); } }
+        public string Permalink
+        {
+            get { return post.Url.ToLowerInvariant().ToFullyQualifiedUrl(); }
+        }
 
-        public string Permalink { get { return post.Url.ToLowerInvariant().ToFullyQualifiedUrl(); } }
+        public string DisqusID
+        {
+            get { return post.Id; }
+        }
 
-        public string DisqusID { get { return post.DisqusID; } }
-
-        public DateTime Published { get { return post.Published.HasValue ? post.Published.Value : DateTime.MinValue; } }
+        public DateTime Published
+        {
+            get { return post.Published.HasValue ? post.Published.Value : DateTime.MinValue; }
+        }
 
         public string PublishedTime
         {
@@ -80,12 +101,23 @@ namespace EyePatch.Blog.Models.Widgets
             get { return string.Format("{0:yyyy}", Published); }
         }
 
-        public PostSummary(Post post, BlogInfo blogInfo, int index, int pageSize)
+        #region IRss Members
+
+        public string Title
         {
-            this.post = post;
-            this.blogInfo = blogInfo;
-            this.index = index;
-            this.pageSize = pageSize;
+            get { return post.Title; }
         }
+
+        public string Description
+        {
+            get { return post.Body.TruncateWords(50); }
+        }
+
+        public string Link
+        {
+            get { return post.Url; }
+        }
+
+        #endregion
     }
 }

@@ -1,1 +1,6 @@
-τªδd8.ύ½±έUΚ1ψοτªδd8.ύ½±έUΚ1ψοτªδd8.ύ½±έUΚ1ψοτªδd8.ύ½±έUΚ1ψοτªδd8.ύ½±έUΚ1ψοτªδd8.ύ½±έUΚ1ψοτªδd8.ύ½±έUΚ1ψοτªδd8.ύ½±έU
+ο»Ώep.widgetTypes.menu = {
+    create: function (data, onFinish) {
+        $(this).html(data.contents);
+        onFinish();
+    }
+};

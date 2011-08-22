@@ -1,18 +1,20 @@
-﻿using System.Collections.Generic;
-using EyePatch.Core.Entity;
+﻿using EyePatch.Core.Documents;
+using EyePatch.Core.Documents.Children;
 
 namespace EyePatch.Core.Services
 {
     public interface IFolderService
     {
-        IList<Folder> All();
-
         Folder RootFolder { get; }
-        Folder Load(int id);
 
-        Folder Create(string title, int parentId);
-        void Rename(int id, string name);
-        void Move(int id, int parent);
-        void Delete(int id);
+        IFolderItem Create(string title, string parentId);
+        void Rename(string id, string name);
+        void Move(string id, string parent);
+        void Delete(string id);
+
+        IFolderItem FindFolder(string id);
+        IFolderItem FindParentFolder(string childId);
+
+        IFolderItem FindParentFolderOfPage(string pageId, out PageItem pageItem);
     }
 }

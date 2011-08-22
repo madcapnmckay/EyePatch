@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web;
+﻿using System.Web;
 
 namespace EyePatch.Core.Util
 {
@@ -17,7 +16,7 @@ namespace EyePatch.Core.Util
         {
             if (first.Length == 0)
                 return second;
-    
+
             if (second.Length == 0)
                 return first;
 

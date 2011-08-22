@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Routing;
+using EyePatch.Core;
 using StructureMap;
 
 namespace EyePatch.Blog
@@ -8,6 +9,7 @@ namespace EyePatch.Blog
     public class PostRoute : Route
     {
         #region Constructors
+
         public PostRoute(string url, IRouteHandler routeHandler)
             : base(url, routeHandler)
         {
@@ -18,15 +20,18 @@ namespace EyePatch.Blog
         {
         }
 
-        public PostRoute(string url, RouteValueDictionary defaults, RouteValueDictionary constraints, IRouteHandler routeHandler)
+        public PostRoute(string url, RouteValueDictionary defaults, RouteValueDictionary constraints,
+                         IRouteHandler routeHandler)
             : base(url, defaults, constraints, routeHandler)
         {
         }
 
-        public PostRoute(string url, RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler routeHandler)
+        public PostRoute(string url, RouteValueDictionary defaults, RouteValueDictionary constraints,
+                         RouteValueDictionary dataTokens, IRouteHandler routeHandler)
             : base(url, defaults, constraints, dataTokens, routeHandler)
         {
-        } 
+        }
+
         #endregion
 
         public override RouteData GetRouteData(HttpContextBase httpContext)
@@ -38,23 +43,36 @@ namespace EyePatch.Blog
                 return null;
 
             var blogManager = ObjectFactory.GetInstance<IBlogManager>();
+            var contentManager = ObjectFactory.GetInstance<IContentManager>();
 
             var post = blogManager.Match(httpContext.Request.Path);
 
+            // return if we don't find
             if (post == null)
                 return null;
 
-            if (post.Published <= DateTime.UtcNow || (httpContext.User.Identity.IsAuthenticated && httpContext.User.IsInRole("Admin")))
+            // if we found but the post isn't published and we aren't logged in
+            if ((!post.Published.HasValue || post.Published > DateTime.UtcNow) && (!httpContext.User.Identity.IsAuthenticated || !httpContext.User.IsInRole("Admin")))
+                return null;
+
+            if (post.Published <= DateTime.UtcNow ||
+                (httpContext.User.Identity.IsAuthenticated && httpContext.User.IsInRole("Admin")))
             {
-                var page = blogManager.Template;
+                var page = blogManager.PostTemplate;
 
                 if (page == null)
                     return null;
 
+                var template = contentManager.Template.Load(page.TemplateId);
+
+                if (template == null)
+                    return null;
+
                 routeData.Values["post"] = post;
-                routeData.Values["controller"] = page.Template.Controller;
-                routeData.Values["action"] = page.Template.Action;
+                routeData.Values["controller"] = template.Controller;
+                routeData.Values["action"] = template.Action;
                 routeData.Values["page"] = page;
+                routeData.Values["template"] = template;
 
                 return routeData;
             }

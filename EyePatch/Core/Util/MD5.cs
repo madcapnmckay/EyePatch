@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace EyePatch.Core.Util
 {
@@ -9,7 +9,7 @@ namespace EyePatch.Core.Util
         public static string Encode(string text)
         {
             //convert to char array
-            char[] chars = text.ToCharArray();
+            var chars = text.ToCharArray();
 
             //get bytes from char array
             var bytes = Encoding.Unicode.GetBytes(text.ToCharArray());

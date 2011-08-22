@@ -687,20 +687,21 @@ String.prototype.format = function () {
             };
             this.handlers = {
                 onMove: function (contentArea, widget, position) {
-                    ep.postJson(ep.urls.widget.move, { instanceId: widget.id, position: position, contentAreaId: contentArea.id });
+                    ep.postJson(ep.urls.widget.move, { pageId: ep.page.id, widgetId: widget.id, position: position, contentAreaId: contentArea.id });
                 },
                 onSort: function (widget, position) {
-                    ep.postJson(ep.urls.widget.sort, { instanceId: widget.id, position: position });
+                    ep.postJson(ep.urls.widget.sort, { pageId: ep.page.id, widgetId: widget.id, position: position });
                 },
                 onDelete: function (widget, onSuccess) {
-                    ep.postJson(ep.urls.widget.remove, { instanceId: widget.id }, onSuccess);
+                    ep.postJson(ep.urls.widget.remove, { pageId: ep.page.id, widgetId: widget.id }, onSuccess);
                 },
                 onAdd: function (contentArea, widgetNode, position, element, onSuccess) {
                     var data = {
                         pageId: ep.page.id,
                         widgetId: widgetNode.id(),
                         contentAreaId: contentArea.id,
-                        position: position
+                        position: position,
+                        sourceUrl: document.location.pathname
                     };
 
                     ep.postJson(ep.urls.widget.add, data, function (data) {
@@ -1176,10 +1177,11 @@ ep.onLoad = function () {
 
     ep.mediaFolderContents = new ko.imagePicker.viewModel({ images: data.images, handlers: ep.actions.file });
     ep.mediaFolders = new ko.tree.viewModel(data.mediaFolders);
-    
+
     // center the window initially
     data.windows[0].position = Math.floor((ep.body.width() / 2) - (data.windows[0].width / 2)) + ',100';
     ep.interfaces = new ko.windowManager.viewModel({ windows: data.windows, cssClass: "eyepatch-admin" });
 
     ep.initialize();
+    ep.hideLoader();
 };

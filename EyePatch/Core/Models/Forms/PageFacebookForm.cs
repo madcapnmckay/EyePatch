@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace EyePatch.Core.Models.Forms
+﻿namespace EyePatch.Core.Models.Forms
 {
     public class PageFacebookForm : FacebookForm
     {

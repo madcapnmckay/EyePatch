@@ -24,13 +24,17 @@ namespace EyePatch.Core.Widgets
 
         public override VirtualFile GetFile(string virtualPath)
         {
-            return IsAppResourcePath(virtualPath) ? new AssemblyResourceVirtualFile(virtualPath) : base.GetFile(virtualPath);
+            return IsAppResourcePath(virtualPath)
+                       ? new AssemblyResourceVirtualFile(virtualPath)
+                       : base.GetFile(virtualPath);
         }
 
         public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies,
                                                            DateTime utcStart)
         {
-            return IsAppResourcePath(virtualPath) ? null : base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+            return IsAppResourcePath(virtualPath)
+                       ? null
+                       : base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
         }
     }
 
@@ -63,7 +67,7 @@ namespace EyePatch.Core.Widgets
                         return assembly.GetManifestResourceStream(matched);
                 }
                 return null;
-            } 
+            }
             catch
             {
                 return null;

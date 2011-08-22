@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using EyePatch.Core.Util.Extensions;
 
 namespace EyePatch.Blog.Models
@@ -14,10 +15,10 @@ namespace EyePatch.Blog.Models
             {
                 if (urlHelper == null)
                 {
-                    var requestContext = new System.Web.Routing.RequestContext(
-                                    new HttpContextWrapper(HttpContext.Current),
-                                    new System.Web.Routing.RouteData());
-                    urlHelper = new System.Web.Mvc.UrlHelper(requestContext);
+                    var requestContext = new RequestContext(
+                        new HttpContextWrapper(HttpContext.Current),
+                        new RouteData());
+                    urlHelper = new UrlHelper(requestContext);
                 }
                 return urlHelper;
             }
@@ -52,7 +53,7 @@ namespace EyePatch.Blog.Models
         {
             get { return Url.ActionSeo("Tags", "BlogAdmin"); }
         }
-        
+
         public string Navigate
         {
             get { return Url.ActionSeo("Navigate", "BlogAdmin"); }

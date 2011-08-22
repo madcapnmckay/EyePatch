@@ -1,6 +1,5 @@
-﻿using System;
-using System.Web.Mvc;
-using EyePatch.Blog.Entity;
+﻿using System.Web.Mvc;
+using EyePatch.Blog.Documents;
 using EyePatch.Blog.Util.ActionResult;
 using EyePatch.Blog.Util.Extensions;
 using EyePatch.Core;
@@ -21,6 +20,19 @@ namespace EyePatch.Blog.Controllers
         [HttpGet]
         public PartialViewResult Post(Post post)
         {
+            if (post == null || post.Id == null)
+            {
+                // figure out what post we are on
+                if (!RouteData.Values.ContainsKey("SourceUrl") || RouteData.Values["SourceUrl"] == null)
+                    return PartialView("Invalid");
+
+                var source = RouteData.Values["SourceUrl"].ToString();
+                post = blogManager.Match(source);
+
+                if (post == null)
+                    return PartialView("Invalid");
+            }
+
             return PartialView(post.ToViewModel(blogManager.Settings));
         }
 
@@ -36,14 +48,15 @@ namespace EyePatch.Blog.Controllers
         [HttpGet]
         public PartialViewResult TagCloud()
         {
-            return PartialView(blogManager.TagCloud(25).ToViewModel(Url));
+            return PartialView(blogManager.TagCloud(25));
         }
 
         [HttpGet]
         public ActionResult Feed()
         {
             var posts = blogManager.Posts(1, 10).ToViewModel(blogManager.Settings, 10);
-            return new RssResult(posts, string.Format("{0} - Latest Posts", contentManager.SiteName), contentManager.SiteDescription);
+            return new RssResult(posts, string.Format("{0} - Latest Posts", contentManager.SiteName),
+                                 contentManager.SiteDescription);
         }
     }
 }

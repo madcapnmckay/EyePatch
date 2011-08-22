@@ -5,7 +5,7 @@ namespace EyePatch.Core.Models.Forms
 {
     public interface IFacebookForm
     {
-        int Id { get; set; }
+        string Id { get; set; }
         string Type { get; set; }
         string Email { get; set; }
         string Phone { get; set; }
@@ -21,32 +21,6 @@ namespace EyePatch.Core.Models.Forms
 
     public class FacebookForm : IFacebookForm
     {
-        public int Id { get; set; }
-
-        public string Type { get; set; }
-
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
-
-        [DataType(DataType.PhoneNumber)]
-        public string Phone { get; set; }
-
-        public string Image { get; set; }
-
-        public string StreetAddress { get; set; }
-
-        public string Locality { get; set; }
-
-        public string Region { get; set; }
-
-        public string Country { get; set; }
-
-        public string Postcode { get; set; }
-
-        public double? Longitude { get; set; }
-
-        public double? Latitude { get; set; }
-
         private static IList<KeyValuePair<string, string>> types;
 
         public IEnumerable<KeyValuePair<string, string>> Types
@@ -97,5 +71,35 @@ namespace EyePatch.Core.Models.Forms
                 return types;
             }
         }
+
+        #region IFacebookForm Members
+
+        public string Id { get; set; }
+
+        public string Type { get; set; }
+
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; }
+
+        [DataType(DataType.PhoneNumber)]
+        public string Phone { get; set; }
+
+        public string Image { get; set; }
+
+        public string StreetAddress { get; set; }
+
+        public string Locality { get; set; }
+
+        public string Region { get; set; }
+
+        public string Country { get; set; }
+
+        public string Postcode { get; set; }
+
+        public double? Longitude { get; set; }
+
+        public double? Latitude { get; set; }
+
+        #endregion
     }
 }

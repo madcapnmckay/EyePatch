@@ -15,10 +15,16 @@ namespace EyePatch.Core.Mvc.Resources
             this.assembly = assembly;
         }
 
+        public override FileInfo DependentFile
+        {
+            get { return new FileInfo(assembly.Location); }
+        }
+
         public override string FileContents()
         {
             var allresources = assembly.GetManifestResourceNames();
-            var resourceName = assembly.GetManifestResourceNames().SingleOrDefault(r => string.Compare(Url, r, true) == 0);
+            var resourceName =
+                assembly.GetManifestResourceNames().SingleOrDefault(r => string.Compare(Url, r, true) == 0);
             if (string.IsNullOrWhiteSpace(resourceName))
                 throw new ApplicationException("The resource cannot be found");
 
@@ -33,14 +39,5 @@ namespace EyePatch.Core.Mvc.Resources
                 }
             }
         }
-
-        public override FileInfo DependentFile
-        {
-            get
-            {
-                return new FileInfo(assembly.Location);
-            }
-        }
-
     }
 }
