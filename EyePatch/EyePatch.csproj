@@ -299,9 +299,6 @@
     <Content Include="Core\Css\eyepatch-admin.css">
       <DependentUpon>mash.chirp.config</DependentUpon>
     </Content>
-    <Content Include="Core\Css\eyepatch-admin.min.css">
-      <DependentUpon>mash.chirp.config</DependentUpon>
-    </Content>
     <Content Include="Core\Css\forms.css" />
     <Content Include="Core\Css\global.css" />
     <Content Include="Core\Css\interface.css" />
