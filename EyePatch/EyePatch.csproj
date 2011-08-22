@@ -148,7 +148,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\LinqToSqlProfilerBootstrapper.cs" />
     <Compile Include="Core\ContentManager.cs" />
     <Compile Include="Core\Documents\Children\ContentArea.cs" />
     <Compile Include="Core\Documents\Children\IFolderItem.cs" />
@@ -295,7 +294,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Start\LinqToSqlProfilerBootstrapper.vb" />
     <Content Include="Core\Css\eyepatch-admin.css">
       <DependentUpon>mash.chirp.config</DependentUpon>
     </Content>
@@ -431,6 +429,7 @@
     <Content Include="Core\Widgets\SimpleMenu\eyepatch-widgets-menu-admin.js" />
     <Content Include="Global.asax" />
     <Content Include="Core\Js\json2.js" />
+    <Content Include="Raven.Studio.xap" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
