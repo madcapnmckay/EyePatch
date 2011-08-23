@@ -76,7 +76,11 @@ namespace EyePatch.Core
             viewModel.Templates = templates.ToViewModel();
             viewModel.TemplateList = templates.ToDictionary(k => k.Id, v => v.Name).ToList();
 
-            viewModel.MediaFolders = new DirectoryInfo(HttpContext.Current.Server.MapPath("~/Media/")).ToViewModel();
+            var mediaFolder = new DirectoryInfo(HttpContext.Current.Server.MapPath("~/Media/"));
+            if (!mediaFolder.Exists)
+                mediaFolder.Create();
+
+            viewModel.MediaFolders = mediaFolder.ToViewModel();
 
             // scripts for the eyepatch admin window
             var scripts = AdminPanelViewModel.DependentJs;
