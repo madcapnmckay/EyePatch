@@ -152,6 +152,10 @@ namespace EyePatch.Core.Services
 
                 // write backup file
                 var physicalFilePath = GetFilePath(set.UnqiueId, minify);
+
+                if (!Directory.Exists(Path.GetDirectoryName(physicalFilePath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(physicalFilePath));
+
                 if (File.Exists(physicalFilePath))
                     File.Delete(physicalFilePath);
 
@@ -212,6 +216,9 @@ namespace EyePatch.Core.Services
 
                 // write backup file
                 var physicalFilePath = GetFilePath(cacheKey, false);
+                if (!Directory.Exists(Path.GetDirectoryName(physicalFilePath)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(physicalFilePath));
+
                 if (File.Exists(physicalFilePath))
                     File.Delete(physicalFilePath);
 
