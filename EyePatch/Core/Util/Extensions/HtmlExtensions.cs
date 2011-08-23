@@ -118,12 +118,19 @@ namespace EyePatch.Core.Util.Extensions
         /// <typeparam name = "TModel"></typeparam>
         /// <param name = "htmlHelper"></param>
         /// <param name = "scripts">Additional scripts supplied by the use</param>
-        public static MvcHtmlString RenderCss<TModel>(this HtmlHelper<TModel> htmlHelper)
+        public static MvcHtmlString RenderCss<TModel>(this HtmlHelper<TModel> htmlHelper, params string[] userScriptPaths)
         {
             var resourceService = ObjectFactory.GetInstance<IResourceService>();
 
+            var css = new ResourceCollection();
             // include the widget scripts for the page
-            var css = htmlHelper.ViewContext.Controller.ViewBag.Css as ResourceCollection;
+            css.AddRange(htmlHelper.ViewContext.Controller.ViewBag.Css);
+            // include the widget scripts for the page
+            foreach (var script in userScriptPaths)
+            {
+                css.Load(script, MatchMode.Path);
+            }
+
             // we treat these separately because we don't want the admin js to be mashed or cached
             var cssTags = resourceService.GetResourcePaths(css).ToTags();
 
