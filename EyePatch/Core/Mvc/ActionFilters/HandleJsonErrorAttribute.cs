@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using EyePatch.Core.Mvc.ActionResults;
 using EyePatch.Core.Util;
@@ -16,28 +17,31 @@ namespace EyePatch.Core.Mvc.ActionFilters
             {
                 object data;
                 // we only include the stacktrace when in debug mode
-                switch (EyePatchApplication.ReleaseMode)
+                var debugMode = EyePatchApplication.ReleaseMode != ReleaseMode.Production ||
+                                (WebConfigurationManager.AppSettings["ShowAjaxErrors"] == "true");
+
+                if (!debugMode)
                 {
-                    case ReleaseMode.Production:
-                        data =
-                            new
-                                {
-                                    status = false,
-                                    message =
-                                        filterContext.Exception is ApplicationException
-                                            ? filterContext.Exception.Message
-                                            : "An unknown error has occurred"
-                                };
-                        break;
-                    default:
-                        data =
-                            new
-                                {
-                                    status = false,
-                                    message = filterContext.Exception.Message,
-                                    stackTrace = filterContext.Exception.StackTrace
-                                };
-                        break;
+
+                    data =
+                        new
+                            {
+                                status = false,
+                                message =
+                                    filterContext.Exception is ApplicationException
+                                        ? filterContext.Exception.Message
+                                        : "An unknown error has occurred"
+                            };
+                }
+                else
+                {
+                    data =
+                                new
+                                    {
+                                        status = false,
+                                        message = filterContext.Exception.Message,
+                                        stackTrace = filterContext.Exception.StackTrace
+                                    };
                 }
 
                 filterContext.Result = new JsonNetResult(data);
