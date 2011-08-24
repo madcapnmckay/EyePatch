@@ -7,7 +7,6 @@ using EyePatch.Core.Models.Forms;
 using EyePatch.Core.Util;
 using Raven.Abstractions.Data;
 using Raven.Client;
-using Raven.Json.Linq;
 
 namespace EyePatch.Core.Services
 {
@@ -85,16 +84,14 @@ namespace EyePatch.Core.Services
             session.Advanced.DatabaseCommands.UpdateByIndex("PagesByTemplate",
                                                             new IndexQuery
                                                                 {
-                                                                    Query = "TemplateID:" + template.Id
+                                                                    Query = "TemplateId:" + template.Id
                                                                 }, new[]
                                                                        {
                                                                            new PatchRequest
                                                                                {
                                                                                    Type = PatchCommandType.Set,
                                                                                    Name = "AnalyticsKey",
-                                                                                   Value =
-                                                                                       RavenJToken.Parse(
-                                                                                           form.AnalyticsKey)
+                                                                                   Value = form.AnalyticsKey
                                                                                }
                                                                        }, false);
             session.SaveChanges();
