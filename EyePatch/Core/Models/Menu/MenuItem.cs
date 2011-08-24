@@ -2,7 +2,7 @@
 {
     public class MenuItem
     {
-        public MenuItem(string title, string description, string url, bool isActive)
+        public MenuItem(string title, string url, string description, bool isActive)
         {
             Title = title;
             Url = url;
