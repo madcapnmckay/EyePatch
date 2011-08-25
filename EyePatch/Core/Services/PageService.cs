@@ -152,7 +152,7 @@ namespace EyePatch.Core.Services
 
         public Page Match(string url)
         {
-            return session.Query<Page>("PagesByUrl").Customize(x => x.WaitForNonStaleResultsAsOfNow()).Where(p => p.Url == url.NormalizeUrl()).SingleOrDefault();
+            return session.Query<Page>("PagesByUrl").Customize(x => x.WaitForNonStaleResultsAsOfLastWrite()).Where(p => p.Url == url.NormalizeUrl()).SingleOrDefault();
         }
 
         public Page Load(string id)
