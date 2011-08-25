@@ -133,14 +133,10 @@ namespace EyePatch.Core.Models
             return form;
         }
 
-        public static WidgetInstance ToViewModel(this Widget pageWidget, string pageId, IContentManager contentManager,
+        public static WidgetInstance ToViewModel(this Widget pageWidget, ResourceCollection pageJs, ResourceCollection pageCss, IContentManager contentManager,
                                                  Controller controller, string sourceUrl)
         {
             var widget = pageWidget.GetInstance();
-
-            var page = contentManager.Page.Load(pageId);
-            var pageJs = contentManager.Page.Js(pageId);
-            var pageCss = contentManager.Page.Css(pageId);
 
             pageJs.AddRange(AdminPanelViewModel.DependentJs);
             pageCss.AddRange(AdminPanelViewModel.DependentCss);
