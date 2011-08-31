@@ -7,9 +7,9 @@ namespace EyePatch.Blog.Util.Extensions
 {
     public static class ViewModelExtensions
     {
-        public static IList<PostSummary> ToViewModel(this IEnumerable<Post> posts, Documents.Blog blog, int pageSize)
+        public static PostList ToViewModel(this IEnumerable<Post> posts, Documents.Blog blog, int page, int pageSize, int totalRecords)
         {
-            return posts.Select((post, idx) => new PostSummary(post, blog, idx, pageSize)).ToList();
+            return new PostList(page, pageSize, totalRecords, posts.Select((post, idx) => new PostSummary(post, blog, idx, pageSize)));
         }
 
         public static PostBody ToViewModel(this Post post, Documents.Blog blog)
