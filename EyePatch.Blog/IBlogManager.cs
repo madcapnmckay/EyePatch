@@ -31,9 +31,9 @@ namespace EyePatch.Blog
         void Publish(string postId);
 
         // widget methods
-        IEnumerable<TagCloudItem> TagCloud(int max);
+        TagCloud TagCloud(int max);
 
-        IEnumerable<Post> Posts(int page, int pageSize);
-        IEnumerable<Post> Tagged(string tag, int page, int pageSize);
+        IEnumerable<Post> Posts(int page, int pageSize, out int totalResults);
+        IEnumerable<Post> Tagged(string tagSlug, int page, int pageSize, out int totalResults);
     }
 }
