@@ -1,14 +1,16 @@
-﻿namespace EyePatch.Blog.Models.Widgets
+﻿using EyePatch.Blog.Documents;
+
+namespace EyePatch.Blog.Models.Widgets
 {
     public class TagCloudItem
     {
-        public string Tag { get; set; }
+        public Tag Tag { get; set; }
 
         public string TagTitle
         {
-            get { return string.Format("Click to view posts tagged {0}", Tag); }
+            get { return string.Format("{0} post{1} tagged {2}", Count, Count == 1 ? "" : "s", Tag.Value); }
         }
-
+      
         public int Count { get; set; }
     }
 }
