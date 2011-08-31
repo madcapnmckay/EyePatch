@@ -6,12 +6,12 @@ using Raven.Client;
 
 namespace EyePatch.Core.Services
 {
-    public class ServiceBase
+    public abstract class ServiceBase
     {
         protected IDocumentSession session;
         private UrlHelper urlHelper;
 
-        public ServiceBase(IDocumentSession session)
+        protected ServiceBase(IDocumentSession session)
         {
             this.session = session;
         }
