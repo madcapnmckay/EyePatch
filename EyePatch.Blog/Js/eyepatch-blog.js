@@ -224,6 +224,10 @@
                             }
                             onSuccess(images);
                         });
+                    },
+                    onInitialized: function ($editable) {
+                        $editable.find('.highlighted-code').remove();
+                        $editable.find('.code').show();
                     }
                 });
             }
