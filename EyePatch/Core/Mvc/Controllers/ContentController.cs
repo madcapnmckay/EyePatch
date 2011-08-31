@@ -28,42 +28,42 @@ namespace EyePatch.Core.Mvc.Controllers
         ///   This method receives a page object from the routing mechanism and returns the correct view template
         ///   populated with the correct widget instances, scripts and css.
         /// </summary>
-        /// <param name = "page"></param>
-        /// <param name = "template"></param>
+        /// <param name = "epPage"></param>
+        /// <param name = "epTemplate"></param>
         /// <returns></returns>
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Put)]
         [Compress(Order = 1)]
         //[ContentAreaCleanup (Order = 2)]
         [GoogleAnalytics(Order = 3)]
         [OutputCache(Duration = 60, VaryByParam = "*", Order = 4)]
-        public ViewResult Service(Page page, Template template)
+        public ViewResult Service(Page epPage, Template epTemplate)
         {
-            if (page == null)
+            if (epPage == null)
                 throw new ApplicationException("page is not specified");
 
-            if (template == null)
+            if (epTemplate == null)
                 throw new ApplicationException("template is not specified");
 
             var u = Url.ActionSeo("Panel", "Admin");
 
             var adminJs = new ResourceCollection();
             adminJs.Load(Resources.Resources.jQuery)
-                .Load(Url.RouteUrl("AdminPanel", new {pageId = page.Id}).ToLowerInvariant(), MatchMode.Path,
+                .Load(Url.RouteUrl("AdminPanel", new {pageId = epPage.Id}).ToLowerInvariant(), MatchMode.Path,
                       "text/javascript");
 
-            ViewBag.ContentAreas = page.ContentAreas.ToList();
-            ViewBag.Page = page;
-            ViewBag.Template = template;
+            ViewBag.ContentAreas = epPage.ContentAreas.ToList();
+            ViewBag.Page = epPage;
+            ViewBag.Template = epTemplate;
             ViewBag.Root = contentManager.Folder.RootFolder;
-            ViewBag.Js = contentManager.Page.Js(page.Id);
+            ViewBag.Js = contentManager.Page.Js(epPage.Id);
             ViewBag.AdminJs = adminJs;
-            ViewBag.Css = contentManager.Page.Css(page.Id);
+            ViewBag.Css = contentManager.Page.Css(epPage.Id);
 
             // add cache dependency so we can do sitewide clears on page change
             contentManager.Page.AddOutputCacheDependency(
                 ((HttpApplication) HttpContext.GetService(typeof (HttpApplication))).Context);
 
-            return View(Path.GetFileNameWithoutExtension(template.ViewPath));
+            return View(Path.GetFileNameWithoutExtension(epTemplate.ViewPath));
         }
 
         /// <summary>
