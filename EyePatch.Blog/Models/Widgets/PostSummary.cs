@@ -11,15 +11,15 @@ namespace EyePatch.Blog.Models.Widgets
     {
         protected Documents.Blog blog;
         protected int index;
-        protected int pageSize;
+        protected int total;
         protected Post post;
 
-        public PostSummary(Post post, Documents.Blog blog, int index, int pageSize)
+        public PostSummary(Post post, Documents.Blog blog, int index, int total)
         {
             this.post = post;
             this.blog = blog;
-            this.index = index;
-            this.pageSize = pageSize;
+            this.index = index + 1; // not zero indexed from users perspective
+            this.total = total;
         }
 
         public bool IsFirst
@@ -29,12 +29,12 @@ namespace EyePatch.Blog.Models.Widgets
 
         public bool IsLast
         {
-            get { return index == (pageSize - 1); }
+            get { return index == total; }
         }
 
         public bool IsEven
         {
-            get { return index%2 == 0; }
+            get { return index % 2 == 0; }
         }
 
         public string CssClass
@@ -110,7 +110,7 @@ namespace EyePatch.Blog.Models.Widgets
 
         public string Description
         {
-            get { return post.Body.TruncateWords(50); }
+            get { return post.Body.TruncateWords(150); }
         }
 
         public string Link
