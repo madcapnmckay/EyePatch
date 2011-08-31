@@ -36,7 +36,7 @@ namespace EyePatch.Core.Mvc.ActionFilters
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var page = filterContext.RouteData.Values["template"] as Template;
+            var page = filterContext.RouteData.Values["epPage"] as Page;
 
             if (page == null || string.IsNullOrWhiteSpace(page.AnalyticsKey))
                 return;
