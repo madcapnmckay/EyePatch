@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Linq;
+using System.Web.Mvc;
 using EyePatch.Blog.Documents;
 using EyePatch.Blog.Util.ActionResult;
 using EyePatch.Blog.Util.Extensions;
@@ -37,24 +38,26 @@ namespace EyePatch.Blog.Controllers
         }
 
         [HttpGet]
-        public PartialViewResult List(string tag, int page = 1, int pageSize = 10)
+        public PartialViewResult List(string tag, int page = 1, int pageSize = 5)
         {
+            int totalResults;
             if (string.IsNullOrWhiteSpace(tag))
-                return PartialView(blogManager.Posts(page, pageSize).ToViewModel(blogManager.Settings, pageSize));
+                return PartialView(blogManager.Posts(page, pageSize, out totalResults).ToViewModel(blogManager.Settings, page, pageSize, totalResults));
 
-            return PartialView(blogManager.Tagged(tag, page, pageSize).ToViewModel(blogManager.Settings, pageSize));
+            return PartialView(blogManager.Tagged(tag, page, pageSize, out totalResults).ToViewModel(blogManager.Settings, page, pageSize, totalResults));
         }
 
         [HttpGet]
         public PartialViewResult TagCloud()
         {
-            return PartialView(blogManager.TagCloud(25));
+            return PartialView(blogManager.TagCloud(50));
         }
 
         [HttpGet]
         public ActionResult Feed()
         {
-            var posts = blogManager.Posts(1, 10).ToViewModel(blogManager.Settings, 10);
+            int totalResults;
+            var posts = blogManager.Posts(1, 10, out totalResults).ToViewModel(blogManager.Settings, 1, 10, totalResults);
             return new RssResult(posts, string.Format("{0} - Latest Posts", contentManager.SiteName),
                                  contentManager.SiteDescription);
         }
