@@ -136,7 +136,7 @@ namespace EyePatch.Core.Services
                 {
                     RavenQueryStatistics stats;
                     var results = session.Query<Page>()
-                        .Customize(x => x.WaitForNonStaleResultsAsOfNow())
+                        .Customize(x => x.WaitForNonStaleResultsAsOfLastWrite())
                         .Statistics(out stats)
                         .Where(x => x.Url != null && x.Url != string.Empty && !x.IsHidden)
                         .ToArray();
