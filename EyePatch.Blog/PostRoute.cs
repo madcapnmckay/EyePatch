@@ -68,11 +68,11 @@ namespace EyePatch.Blog
                 if (template == null)
                     return null;
 
-                routeData.Values["post"] = post;
+                routeData.Values["epPost"] = post;
                 routeData.Values["controller"] = template.Controller;
                 routeData.Values["action"] = template.Action;
-                routeData.Values["page"] = page;
-                routeData.Values["template"] = template;
+                routeData.Values["epPage"] = page;
+                routeData.Values["epTemplate"] = template;
 
                 return routeData;
             }

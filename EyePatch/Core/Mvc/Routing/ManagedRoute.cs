@@ -72,8 +72,8 @@ namespace EyePatch.Core.Mvc.Routing
             if (routeData.Values.ContainsKey("area"))
                 routeData.Values["area"] = "CMS";
 
-            routeData.Values["page"] = page;
-            routeData.Values["template"] = template;
+            routeData.Values["epPage"] = page;
+            routeData.Values["epTemplate"] = template;
 
             return routeData;
         }
