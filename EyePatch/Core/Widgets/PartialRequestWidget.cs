@@ -43,7 +43,7 @@ namespace EyePatch.Core.Widgets
             // allows us to mock it
             var req = new HttpRequest(context.HttpContext.Request.Path,
                                       context.HttpContext.Request.Url.AbsoluteUri,
-                                      context.HttpContext.Request.Url.Query);
+                                      context.HttpContext.Request.Url.Query.TrimStart('?'));
             var res = new HttpResponse(context.Writer);
             var ctx = new HttpContext(req, res);
             ctx.User = context.HttpContext.User;
