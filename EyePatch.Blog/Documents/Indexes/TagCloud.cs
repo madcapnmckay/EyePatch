@@ -10,12 +10,12 @@ namespace EyePatch.Blog.Documents.Indexes
         {
             Map = posts => from post in posts
                            from tag in post.Tags
-                           select new {Tag = tag, Count = 1};
+                           select new { Tag = tag, Count = 1};
 
             Reduce = results => from result in results
                                 group result by result.Tag
                                 into g
-                                select new {Tag = g.Key, Count = g.Sum(x => x.Count)};
+                                select new { Tag = g.Key, g.Key.Slug, Count = g.Sum(x => x.Count)};
         }
     }
 }
