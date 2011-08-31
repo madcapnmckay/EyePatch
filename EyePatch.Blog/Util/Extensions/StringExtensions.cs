@@ -4,9 +4,12 @@ namespace EyePatch.Blog.Util.Extensions
 {
     public static class StringExtensions
     {
+        private static readonly Regex regexForPTags = new Regex(@"<p>\s*(.+)\s*</p>",
+                                                       RegexOptions.Singleline | RegexOptions.Compiled);
+
         public static string TruncateWords(this string text, int wordCount)
         {
-            var paragraphRegex = new Regex(@"<p>(.+)</p>").Match(text);
+            var paragraphRegex = regexForPTags.Match(text);
 
             var output = string.Empty;
             var input = text;
