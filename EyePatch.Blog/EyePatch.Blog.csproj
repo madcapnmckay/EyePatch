@@ -134,6 +134,8 @@
     <Compile Include="Documents\Indexes\TagCloud.cs" />
     <Compile Include="Documents\Post.cs" />
     <Compile Include="Documents\Tag.cs" />
+    <Compile Include="Models\Widgets\PostList.cs" />
+    <Compile Include="Models\Widgets\TagCloud.cs" />
     <Compile Include="TaggedRoute.cs" />
     <Compile Include="Models\BlogPanelExtensions.cs" />
     <Compile Include="Models\BlogRoutes.cs" />
