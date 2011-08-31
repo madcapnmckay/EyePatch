@@ -1,40 +1,42 @@
 ﻿@model EyePatch.Blog.Models.Widgets.PostBody
 <div class="blog-post">
-    <h1 id="title">
-        @Model.Title</h1>
-    <div class="post-date" title="Posted at @Model.PublishedTime">
-        <div class="month">
-            @Model.PublishedMonthShort</div>
-        <div class="day">
-            @Model.PublishedDay</div>
-        <div class="year">
-            @Model.PublishedYear</div>
-    </div>
-    @if (Model.CommentsEnabled)
-    {
-        <div class="pos-comments-count">
-            <a href="@Model.CommentCountUrl" data-disqus-identifier="@Model.DisqusID" title="Click here to view this posts comments">
-                ??</a>
+    <article>
+        <h1 id="title">
+            @Model.Title</h1>
+        <div class="post-date" title="Posted at @Model.PublishedTime">
+            <div class="month">
+                @Model.PublishedMonthShort</div>
+            <div class="day">
+                @Model.PublishedDay</div>
+            <div class="year">
+                @Model.PublishedYear</div>
         </div>
-    }
-    @if (Model.Tags.Any())
-    {
-        <div class="tagged">
-            <ul>
-                @foreach (var tag in Model.Tags)
-                {
-                    <li>
-                        @tag.Value</li>
-                }
-            </ul>
+        @if (Model.CommentsEnabled)
+        {
+            <div class="post-comments-count">
+                <a href="@Model.CommentCountUrl" data-disqus-identifier="@Model.DisqusID" title="Click here to view this posts comments">
+                    0</a>
+            </div>
+        }
+        <div class="post-body">
+            @Html.Raw(Model.Body)
         </div>
-    }
-    <div class="post-body">
-        @Html.Raw(Model.Body)
-    </div>
-    <script type="text/javascript">
-        var blogPostId = '@Model.PostId';
-    </script>
+        @if (Model.Tags.Any())
+        {
+            <div class="tagged">
+                <ul>
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <li class="blog-tag"><a href="@Url.RouteUrl("PostsTagged", new { tag = tag.Slug })">
+                            @tag.Value</a></li>
+                    }
+                </ul>
+            </div>
+        }
+        <script type="text/javascript">
+            var blogPostId = '@Model.PostId';
+        </script>
+    </article>
 </div>
 @if (Model.CommentsEnabled)
 {

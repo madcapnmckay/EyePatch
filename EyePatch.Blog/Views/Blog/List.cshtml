@@ -1,33 +1,38 @@
-﻿@model IList<EyePatch.Blog.Models.Widgets.PostSummary>
+﻿@model EyePatch.Blog.Models.Widgets.PostList
            
 @if (Model.Any())
 {
     foreach (var post in Model)
     {
-        <div class="@post.CssClass>">
-            <h2>
-                <a href="@post.Link" title="Click here to read this post">@post.Title</a></h2>
-            <div title="Posted at @post.Link" class="post-date">
-                <span class="month">@post.PublishedMonthShort</span>
-                <span class="day">@post.PublishedDay</span>
-                <span class="year">@post.PublishedYear</span>
-            </div>
-            <div class="post-comments">
-                <a title="Click here to view this posts comments" href="@post.CommentCountUrl" data-disqus-identifier="@post.DisqusID">??</a>
-            </div>
-            <div class="post-description">
-                <p>
-                    @post.Description <a href="@post.Link" class="read-more" title="Click here to read this post">read more</a>
-                </p>
-
-            </div>
+        <div class="@post.CssClass">
+            <article>
+                <h1>
+                    <a href="@post.Link" title="Click here to read this post">@post.Title</a></h1>
+                <div title="Posted at @post.PublishedTime" class="post-date">
+                    <div class="month">@post.PublishedMonthShort</div>
+                    <div class="day">@post.PublishedDay</div>
+                    <div class="year">@post.PublishedYear</div>
+                </div>
+                <div class="post-comments-count">
+                    <a title="Click here to view this posts comments" href="@post.CommentCountUrl" data-disqus-identifier="@post.DisqusID">0</a>
+                </div>
+                <div class="post-description">
+                    <p>
+                        @Html.Raw(post.Description) <a href="@post.Link" class="read-more" title="Click here to read this post">read more</a>
+                    </p>
+                </div>
+            </article>
         </div>
     }
-    if (Model.Count() > 10)
+    if (Model.PagerVisible)
     {
         <div class="pager">
-            <div><a href="">older</a></div>
-            <div><a href="">newer</a></div>
+            @if (Model.OlderVisible) {
+                <div class="older"><a href="@Model.OlderLink">&#171; older</a></div>
+            }
+            @if (Model.NewerVisible) {
+                <div class="newer"><a href="@Model.NewerLink">newer &#187;</a></div>
+            }
         </div>
     }
 } else
