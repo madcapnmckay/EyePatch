@@ -11,6 +11,7 @@ using EyePatch.Core.Documents;
 using EyePatch.Core.Services;
 using EyePatch.Core.Util.Extensions;
 using Raven.Client;
+using Raven.Client.Linq;
 
 namespace EyePatch.Blog
 {
@@ -143,7 +144,7 @@ namespace EyePatch.Blog
             {
                 post.Tags.AddRange(
                     form.Tags.Split(',').Where(t => t.Trim() != "").Select(
-                        t => new Tag {Value = t.Trim().ToLowerInvariant()}));
+                        t => new Tag(t.Trim().ToLowerInvariant())));
             }
 
             post.LastModified = DateTime.UtcNow;
@@ -199,22 +200,34 @@ namespace EyePatch.Blog
             contentManager.Page.ClearOutputCacheDependency(HttpContext.Current);
         }
 
-        public IEnumerable<TagCloudItem> TagCloud(int max)
+        public TagCloud TagCloud(int max)
         {
-            return session.Query<TagCloudItem>("TagCloud").OrderByDescending(t => t.Count).Take(150);
+            RavenQueryStatistics stats;
+            session.Query<Post>()
+                .Customize(x => x.WaitForNonStaleResultsAsOfLastWrite())
+                .Statistics(out stats)
+                .Where(x => x.Published != null && x.Published <= DateTime.UtcNow)
+                .ToArray();
+
+            return new TagCloud(session.Query<TagCloudItem>("TagCloud").Take(max).ToList().OrderByDescending(t => t.Tag.Value), stats.TotalResults);
         }
 
-        public IEnumerable<Post> Posts(int page, int pageSize)
+        public IEnumerable<Post> Posts(int page, int pageSize, out int totalResults)
         {
-            return
-                session.Query<Post>("PostsByTime").Where(p => p.Published < DateTime.UtcNow).OrderByDescending(
-                    p => p.Published).Skip(page - 1).Take(pageSize);
+            RavenQueryStatistics stats;
+            var results = session.Query<Post>("PostsByTime").Statistics(out stats)
+                .Where(p => p.Published < DateTime.UtcNow).OrderByDescending(p => p.Published).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            totalResults = stats.TotalResults;
+            return results;
         }
 
-        public IEnumerable<Post> Tagged(string tag, int page, int pageSize)
+        public IEnumerable<Post> Tagged(string tagSlug, int page, int pageSize, out int totalRecords)
         {
-            return
-                session.Query<Post>("PostsByTag").Where(p => p.Tags.Any(t => t.Value == tag)).Skip(page).Take(pageSize);
+            RavenQueryStatistics stats;
+            var results = session.Query<Post>("PostsByTag").Statistics(out stats)
+                .Where(p => p.Tags.Any(t => t.Slug == tagSlug)).Skip((page - 1) * pageSize).Take(pageSize);
+            totalRecords = stats.TotalResults;
+            return results;
         }
 
         #endregion
