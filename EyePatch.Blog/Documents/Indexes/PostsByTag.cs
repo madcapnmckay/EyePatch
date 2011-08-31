@@ -9,7 +9,7 @@ namespace EyePatch.Blog.Documents.Indexes
         {
             Map = posts => from post in posts
                            from tag in post.Tags
-                           select new {tag};
+                           select new { tag };
         }
     }
 }
