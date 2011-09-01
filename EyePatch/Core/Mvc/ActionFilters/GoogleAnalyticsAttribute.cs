@@ -17,25 +17,10 @@ namespace EyePatch.Core.Mvc.ActionFilters
         // bad monkey! need to inject
         protected IResourceService resourceService = ObjectFactory.GetInstance<IResourceService>();
 
-        protected UrlHelper urlHelper;
-
-        public UrlHelper Url
-        {
-            get
-            {
-                if (urlHelper == null)
-                {
-                    var requestContext = new RequestContext(
-                        new HttpContextWrapper(HttpContext.Current),
-                        new RouteData());
-                    return urlHelper = new UrlHelper(requestContext);
-                }
-                return urlHelper;
-            }
-        }
-
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            var urlHelper = new UrlHelper(filterContext.RequestContext);
+
             var page = filterContext.RouteData.Values["epPage"] as Page;
 
             if (page == null || string.IsNullOrWhiteSpace(page.AnalyticsKey))
@@ -44,13 +29,12 @@ namespace EyePatch.Core.Mvc.ActionFilters
             var analytics = new ResourcePath
                                 {
                                     ContentType = "text/javascript",
-                                    Url = Url.ActionSeo("Analytics", "Content", new {id = page.Id})
+                                    Url = urlHelper.ActionSeo("Analytics", "Content", new { id = page.Id })
                                 };
 
             var response = filterContext.HttpContext.Response;
             response.Filter = new RegexResponseFilter(response.Filter, adminPanelRegex,
-                                                      string.Format("{0}</head>",
-                                                                    new List<ResourcePath> {analytics}.ToTags()));
+                                                      string.Format("{0}</head>", new List<ResourcePath> {analytics}.ToTags()));
         }
     }
 }
