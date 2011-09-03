@@ -32,10 +32,9 @@ namespace EyePatch.Core.Mvc.Controllers
         /// <param name = "epTemplate"></param>
         /// <returns></returns>
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Put)]
-        [Compress(Order = 1)]
         //[ContentAreaCleanup (Order = 2)]
-        [GoogleAnalytics(Order = 3)]
-        [OutputCache(Duration = 60, VaryByParam = "*", Order = 4)]
+        [GoogleAnalytics(Order = 1)]
+        [OutputCache(Duration = 60, VaryByParam = "*", Order = 2)]
         public ViewResult Service(Page epPage, Template epTemplate)
         {
             if (epPage == null)
