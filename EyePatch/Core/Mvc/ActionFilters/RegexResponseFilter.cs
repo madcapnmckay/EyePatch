@@ -35,13 +35,14 @@ namespace EyePatch.Core.Mvc.ActionFilters
 
         public override long Length
         {
-            get { return response.Length; }
+            get { return 0; }
         }
 
+        private long _position;
         public override long Position
         {
-            get { return response.Position; }
-            set { response.Position = value; }
+            get { return _position; }
+            set { _position = value; }
         }
 
         public override void Flush()
@@ -64,18 +65,21 @@ namespace EyePatch.Core.Mvc.ActionFilters
             return response.Read(buffer, offset, count);
         }
 
+        public override void Close()
+        {
+            response.Close();
+        }
+
         public override void Write(byte[] buffer, int offset, int count)
         {
-            // capture the data and convert to string
-            var data = new byte[count];
-            Buffer.BlockCopy(buffer, offset, data, 0, count);
-
             // filter the string
-            var s = Encoding.Default.GetString(buffer);
-            s = regex.Replace(s, replacement);
+            string html = Encoding.Default.GetString(buffer);
 
-            // write the data to stream 
-            var outdata = Encoding.Default.GetBytes(s);
+            //remove whitespace
+            html = regex.Replace(html, replacement);
+
+            byte[] outdata = Encoding.Default.GetBytes(html);
+
             response.Write(outdata, 0, outdata.GetLength(0));
         }
     }
