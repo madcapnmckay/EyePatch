@@ -68,6 +68,12 @@ namespace EyePatch.Blog
                 if (template == null)
                     return null;
 
+                // set title/modified time
+                page.Title = post.Title;
+                if (post.Published.HasValue)
+                    page.Created = post.Published.Value;
+                page.LastModified = post.LastModified;
+
                 routeData.Values["epPost"] = post;
                 routeData.Values["controller"] = template.Controller;
                 routeData.Values["action"] = template.Action;
