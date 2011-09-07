@@ -80,6 +80,9 @@ namespace EyePatch.Blog
                 contentManager.Page.VisiblePages().Select(p => new KeyValuePair<string, string>(p.Id, p.Name));
             blogPanelContents.Drafts = Drafts().ToDraftsTree();
             blogPanelContents.Published = Published().ToPublishedTree();
+            blogPanelContents.Disqus = Settings.DisqusShortName;
+            blogPanelContents.Template = Settings.TemplateId;
+            blogPanelContents.ListPage = Settings.ListPageId;
 
             if (blogPanelContents.Drafts.Children.Any())
                 blogPanelContents.Tabs.Members[1].IsActive = true;
@@ -173,6 +176,7 @@ namespace EyePatch.Blog
         {
             Settings.ListPageId = listPage;
             Settings.DisqusShortName = string.IsNullOrWhiteSpace(disqus) ? null : disqus;
+            Settings.TemplateId = templateId;
 
             if (PostTemplate.TemplateId != templateId)
                 contentManager.Page.ChangeTemplate(PostTemplate.Id, templateId);
@@ -225,7 +229,7 @@ namespace EyePatch.Blog
         {
             RavenQueryStatistics stats;
             var results = session.Query<Post>("PostsByTag").Statistics(out stats)
-                .Where(p => p.Tags.Any(t => t.Slug == tagSlug)).Skip((page - 1) * pageSize).Take(pageSize);
+                .Where(p => p.Tags.Any(t => t.Slug == tagSlug)).OrderByDescending(p => p.Published).Skip((page - 1) * pageSize).Take(pageSize);
             totalRecords = stats.TotalResults;
             return results;
         }
