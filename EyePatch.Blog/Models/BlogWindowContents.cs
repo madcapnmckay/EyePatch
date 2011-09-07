@@ -40,9 +40,9 @@ namespace EyePatch.Blog.Models
 
         public string Disqus { get; set; }
 
-        public int ListPage { get; set; }
+        public string ListPage { get; set; }
 
-        public int Template { get; set; }
+        public string Template { get; set; }
 
         public DraftsTree Drafts { get; set; }
 
