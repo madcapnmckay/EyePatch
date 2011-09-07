@@ -22,7 +22,6 @@ namespace EyePatch.Core.Mvc.Controllers
         {
         }
 
-
         /// <summary>
         ///   The main service method for every page
         ///   This method receives a page object from the routing mechanism and returns the correct view template
@@ -37,17 +36,15 @@ namespace EyePatch.Core.Mvc.Controllers
         [OutputCache(Duration = 60, VaryByParam = "*", Order = 2)]
         public ViewResult Service(Page epPage, Template epTemplate)
         {
-            if (epPage == null)
+            if (epPage == null || epPage.Id == null)
                 throw new ApplicationException("page is not specified");
 
-            if (epTemplate == null)
+            if (epTemplate == null || epTemplate.Id == null)
                 throw new ApplicationException("template is not specified");
 
-            var u = Url.ActionSeo("Panel", "Admin");
-
             var adminJs = new ResourceCollection();
-            adminJs.Load(Resources.Resources.jQuery)
-                .Load(Url.RouteUrl("AdminPanel", new {pageId = epPage.Id}).ToLowerInvariant(), MatchMode.Path,
+            adminJs.Load(Resources.Resources.jQuery);
+            adminJs.Load(Url.RouteUrl("AdminPanel", new {pageId = epPage.Id}).ToLowerInvariant(), MatchMode.Path,
                       "text/javascript");
 
             ViewBag.ContentAreas = epPage.ContentAreas.ToList();
