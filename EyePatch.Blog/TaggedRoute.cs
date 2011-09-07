@@ -56,8 +56,8 @@ namespace EyePatch.Blog
 
             routeData.Values["controller"] = template.Controller;
             routeData.Values["action"] = template.Action;
-            routeData.Values["page"] = page;
-            routeData.Values["template"] = template;
+            routeData.Values["epPage"] = page;
+            routeData.Values["epTemplate"] = template;
 
             return routeData;
         }
