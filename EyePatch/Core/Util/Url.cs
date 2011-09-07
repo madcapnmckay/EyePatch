@@ -113,7 +113,7 @@ namespace EyePatch.Core.Util
                 }
                 else
                 {
-                    sb.Append(HttpUtility.UrlEncode(c.ToString()));
+                    sb.Append(c.ToString());
                 }
                 if (i == maxlen) break;
             }
